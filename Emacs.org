@@ -18,32 +18,39 @@
  
 #+end_src 
 * Packages
+** Todoes [0/2]
+*** TODO What does package-initialise do?
+*** TODO What does  (unless package-archive-contents (package-refresh-contents)) do?
+** Config 
 #+begin_src emacs-lisp
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
+  (require 'package)
+  (add-to-list 'package-archives
+               '("melpa" . "http://melpa.org/packages/") t)
 
-(package-initialize)
-(unless package-archive-contents (package-refresh-contents))    ;; update packages
-
-
+  (package-initialize)
+  (unless package-archive-contents (package-refresh-contents))    ;; update packages
 #+end_src
-* Font Size
+* Project Management
+** project.el
+** projectile
+* Visuals 
+** Font Size
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil :height satori-font-size)
 #+end_src
-* UI Elements
+** UI Elements
 #+begin_src emacs-lisp
 (tool-bar-mode satori-tool-bar)
 (menu-bar-mode satori-menu-bar)			
 (scroll-bar-mode satori-scroll-bar)
 (set-fringe-mode satori-fringe-mode-padding)
 #+end_src
-* Modeline
+** Modeline
 #+begin_src emacs-lisp
   ;; --- modeline settings ---
   (display-time-mode 1)                   ;; display time 
 #+end_src
-* Line Numbers
+** Line Numbers
 #+begin_src emacs-lisp
 (global-display-line-numbers-mode t)
 
@@ -54,19 +61,18 @@
 * Plugins 
 ** Evil (vim)
 #+begin_src emacs-lisp
+  (use-package evil
+    :init
+    (setq evil-want-C-u-scroll t)
+    :config
+    (evil-mode 1)
+    (setq select-enable-clipboard t)
+    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+    (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
+  )
 
 #+end_src
-* Hooks
-** eshell
-#+begin_src emacs-lisp
-(add-hook 'eshell-mode-hook 'satori-disable-line-numbers)
-#+end_src
-* Org-mode
-#+begin_src emacs-lisp
- 
-  (add-hook 'org-mode-hook 'satori-disable-line-numbers)
-#+end_src
-* Org Roam 
+** Org Roam 
 #+begin_src emacs-lisp
   (use-package org-roam
     :bind(("C-c n l" . org-roam-buffer-toggle)
@@ -77,4 +83,14 @@
           )
     :config
     (setq org-roam-directory satori-org-roam-directory))
+#+end_src
+* Org-mode
+#+begin_src emacs-lisp
+ 
+  (add-hook 'org-mode-hook 'satori-disable-line-numbers)
+#+end_src
+* Hooks
+** eshell
+#+begin_src emacs-lisp
+(add-hook 'eshell-mode-hook 'satori-disable-line-numbers)
 #+end_src

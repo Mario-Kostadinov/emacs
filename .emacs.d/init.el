@@ -9,8 +9,9 @@
 ;; --- use-package ---
 (setq use-package-always-ensure t)                            ;; auto-install missing packages
 ;; --- Org Roam ---
-(setq satori-org-roam-directory "~/projects/satori-notes")
+(setq satori-org-roam-directory "~/projects/satori-notes")    ;; org roam notes directory
 
+(require 'package)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/") t)
 
@@ -32,11 +33,15 @@
 (defun satori-disable-line-numbers ()
    (display-line-numbers-mode 0))
 
-
-
-(add-hook 'eshell-mode-hook 'satori-disable-line-numbers)
-
-(add-hook 'org-mode-hook 'satori-disable-line-numbers)
+(use-package evil
+  :init
+  (setq evil-want-C-u-scroll t)
+  :config
+  (evil-mode 1)
+  (setq select-enable-clipboard t)
+  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+  (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
+)
 
 (use-package org-roam
   :bind(("C-c n l" . org-roam-buffer-toggle)
@@ -47,3 +52,7 @@
         )
   :config
   (setq org-roam-directory satori-org-roam-directory))
+
+(add-hook 'org-mode-hook 'satori-disable-line-numbers)
+
+(add-hook 'eshell-mode-hook 'satori-disable-line-numbers)
