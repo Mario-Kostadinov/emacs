@@ -1,11 +1,15 @@
 ;--- Environment variables ---
 ;--- Editor Styling ---
 (setq satori-font-size 160)                                   ;; font-size
+;--- Themes ---
+(setq satori-theme 'tango-dark)
 ;--- UI Elements ---
 (setq satori-tool-bar 0)                                      ;; tool bar
 (setq satori-menu-bar 0)                                      ;; menu bar
 (setq satori-scroll-bar 0)                                    ;; scroll bar
 (setq satori-fringe-mode-padding 0)                           ;; horizontal padding
+;; --- General Settings ---
+(setq satori-backups nil)
 ;; --- use-package ---
 (setq use-package-always-ensure t)                            ;; auto-install missing packages
 ;; --- Org Roam ---
@@ -17,6 +21,8 @@
 
 (package-initialize)
 (unless package-archive-contents (package-refresh-contents))    ;; update packages
+
+(load-theme satori-theme t)
 
 (set-face-attribute 'default nil :height satori-font-size)
 
@@ -32,6 +38,8 @@
 
 (defun satori-disable-line-numbers ()
    (display-line-numbers-mode 0))
+
+(setq make-backup-files satori-backups)
 
 (use-package evil
   :init

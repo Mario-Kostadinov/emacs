@@ -6,16 +6,20 @@
   ;--- Environment variables ---
   ;--- Editor Styling ---
   (setq satori-font-size 160)                                   ;; font-size
+  ;--- Themes ---
+  (setq satori-theme 'tango-dark)
   ;--- UI Elements ---
   (setq satori-tool-bar 0)                                      ;; tool bar
   (setq satori-menu-bar 0)                                      ;; menu bar
   (setq satori-scroll-bar 0)                                    ;; scroll bar
   (setq satori-fringe-mode-padding 0)                           ;; horizontal padding
+  ;; --- General Settings ---
+  (setq satori-backups nil)
   ;; --- use-package ---
   (setq use-package-always-ensure t)                            ;; auto-install missing packages
   ;; --- Org Roam ---
   (setq satori-org-roam-directory "~/projects/satori-notes")    ;; org roam notes directory
- 
+
 #+end_src 
 * Packages
 ** Todoes [0/2]
@@ -30,10 +34,11 @@
   (package-initialize)
   (unless package-archive-contents (package-refresh-contents))    ;; update packages
 #+end_src
-* Project Management
-** project.el
-** projectile
 * Visuals 
+** Theme
+#+begin_src emacs-lisp
+(load-theme satori-theme t)
+#+end_src
 ** Font Size
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil :height satori-font-size)
@@ -57,7 +62,15 @@
 (defun satori-disable-line-numbers ()
    (display-line-numbers-mode 0))
 #+end_src
-
+* General Settings
+** Backups
+Do more testing and research on make-backup-files
+#+begin_src emacs-lisp
+(setq make-backup-files satori-backups)
+#+end_src
+* Project Management
+** project.el
+** projectile
 * Plugins 
 ** Evil (vim)
 #+begin_src emacs-lisp
