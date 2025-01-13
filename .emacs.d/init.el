@@ -1,6 +1,6 @@
 ;--- Environment variables ---
 ;--- Editor Styling ---
-(setq satori-font-size 160)                                   ;; font-size
+(setq satori-font-size 200)                                   ;; font-size
 ;--- Themes ---
 (setq satori-theme 'tango-dark)
 ;--- UI Elements ---
@@ -14,6 +14,7 @@
 (setq use-package-always-ensure t)                            ;; auto-install missing packages
 ;; --- Org Roam ---
 (setq satori-org-roam-directory "~/projects/satori-notes")    ;; org roam notes directory
+;; --- project.el ---
 
 (require 'package)
 (add-to-list 'package-archives
