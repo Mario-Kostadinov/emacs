@@ -42,6 +42,36 @@
 
 (setq make-backup-files satori-backups)
 
+(use-package helm
+           :ensure t
+           :config
+           (helm-mode 1)
+           (setq helm-M-x-fuzzy-match t
+                 helm-buffers-fuzzy-matching t
+                 helm-recentf-fuzzy-match t))
+
+         ;; Keybindings
+         (global-set-key (kbd "C-x C-f") 'helm-find-files)  ;; Find files
+         (global-set-key (kbd "C-M-j") 'helm-buffers-list)  ;; Buffer list
+         (global-set-key (kbd "M-x") 'helm-M-x)            ;; Replace M-x with Helm
+
+         (with-eval-after-load 'helm
+           (define-key helm-map (kbd "C-j") 'helm-next-line)
+           (define-key helm-map (kbd "C-k") 'helm-previous-line)
+           (define-key helm-map (kbd "C-h") 'helm-find-files-up-one-level)
+           (define-key helm-map (kbd "C-l") 'helm-execute-persistent-action))
+
+         (with-eval-after-load 'helm-buffers
+             (define-key helm-find-files-map (kbd "C-l") 'helm-execute-persistent-action)
+           (define-key helm-buffer-map (kbd "C-h") 'helm-keyboard-quit)
+     (define-key helm-buffer-map (kbd "C-d") 'helm-buffer-run-kill-persistent)
+   (define-key helm-buffer-map (kbd "C-o") 'helm-maybe-exit-minibuffer)
+(define-key helm-buffer-map (kbd "C-n") 'helm-buffer-switch-other-window)
+       )
+
+ (with-eval-after-load 'helm-files
+   (define-key helm-find-files-map (kbd "C-p") 'helm-execute-persistent-action))
+
 (use-package evil
   :init
   (setq evil-want-C-u-scroll t)
