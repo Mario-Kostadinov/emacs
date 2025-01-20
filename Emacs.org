@@ -32,8 +32,8 @@
   (add-to-list 'package-archives
                '("melpa" . "http://melpa.org/packages/") t)
 
-  (package-initialize)
   (unless package-archive-contents (package-refresh-contents))    ;; update packages
+  (package-initialize)
 #+end_src
 * Visuals 
 ** Theme
@@ -69,56 +69,116 @@ Do more testing and research on make-backup-files
 #+begin_src emacs-lisp
 (setq make-backup-files satori-backups)
 #+end_src
+** Save History
+#+begin_src emacs-lisp
+(use-package savehist
+  :init
+  (savehist-mode))
+#+end_src
+** Magnolia
+#+begin_src emacs-lisp
+  (use-package marginalia
+  :ensure t
+  :after vertico
+  :init
+  (marginalia-mode))
+#+end_src
 * Project Management
 ** project.el
 ** projectile
 * Completion Frameworks
-** Helm
+** Orderless
 #+begin_src emacs-lisp
-            (use-package helm
-            :ensure t
-            :config
-            (helm-mode 1)
-            (setq helm-M-x-fuzzy-match t
-                  helm-buffers-fuzzy-matching t
-                  helm-recentf-fuzzy-match t))
+  (use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic)) ;; Add orderless for better matching
+  (completion-category-defaults nil)    ;; Allow orderless for all categories
+  )
+#+end_src
+** Helm
+#+begin_src emacs-lisp :tangle no
+  (use-package helm
+    :ensure t
+    :config
+    (helm-mode 1)
+    (setq helm-M-x-fuzzy-match t
+          helm-buffers-fuzzy-matching t
+          helm-recentf-fuzzy-match t))
 
-          ;; Keybindings
-          (global-set-key (kbd "C-x C-f") 'helm-find-files)  ;; Find files
-          (global-set-key (kbd "C-M-j") 'helm-buffers-list)  ;; Buffer list
-          (global-set-key (kbd "M-x") 'helm-M-x)            ;; Replace M-x with Helm
+    (with-eval-after-load 'helm
+       (define-key helm-map (kbd "C-j") 'helm-next-line)
+       (define-key helm-map (kbd "C-k") 'helm-previous-line)
+       (define-key helm-map (kbd "C-h") 'helm-find-files-up-one-level)
+       (define-key helm-map (kbd "C-l") 'helm-execute-persistent-action))
 
-          (with-eval-after-load 'helm
-            (define-key helm-map (kbd "C-j") 'helm-next-line)
-            (define-key helm-map (kbd "C-k") 'helm-previous-line)
-            (define-key helm-map (kbd "C-h") 'helm-find-files-up-one-level)
-            (define-key helm-map (kbd "C-l") 'helm-execute-persistent-action))
+     (with-eval-after-load 'helm-buffers
+       (define-key helm-find-files-map (kbd "C-l") 'helm-execute-persistent-action)
+       (define-key helm-buffer-map (kbd "C-h") 'helm-keyboard-quit)
+       (define-key helm-buffer-map (kbd "C-d") 'helm-buffer-run-kill-persistent)
+       (define-key helm-buffer-map (kbd "C-o") 'helm-maybe-exit-minibuffer)
+       (define-key helm-buffer-map (kbd "C-n") 'helm-buffer-switch-other-window))
 
-          (with-eval-after-load 'helm-buffers
-              (define-key helm-find-files-map (kbd "C-l") 'helm-execute-persistent-action)
-            (define-key helm-buffer-map (kbd "C-h") 'helm-keyboard-quit)
-      (define-key helm-buffer-map (kbd "C-d") 'helm-buffer-run-kill-persistent)
-    (define-key helm-buffer-map (kbd "C-o") 'helm-maybe-exit-minibuffer)
- (define-key helm-buffer-map (kbd "C-n") 'helm-buffer-switch-other-window)
-        )
+     (with-eval-after-load 'helm-files
+       (define-key helm-find-files-map (kbd "C-p") 'helm-execute-persistent-action))
+#+end_src
 
-  (with-eval-after-load 'helm-files
-    (define-key helm-find-files-map (kbd "C-p") 'helm-execute-persistent-action))
+#+RESULTS: 
+** Vertico
+#+begin_src emacs-lisp
+  ;; Enable vertico
+(use-package vertico
+  :custom
+  (vertico-scroll-margin 0) ;; Different scroll margin
+  (vertico-count 10) ;; Show more candidates
+  (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
+  (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
+  :init
+  (vertico-mode))
+#+end_src
+** Consult
+#+begin_src emacs-lisp
+      (use-package consult
+      :ensure t
+      :bind (
+	     ("C-s" . consult-line)         ;; Line search, similar to Swiper
+	     ("C-x b" . consult-buffer)     ;; Enhanced buffer switching
+	     ("M-g g" . consult-goto-line)  ;; Go to a specific line
+	     ("C-c k" . consult-ripgrep)    ;; Search files with ripgrep
+	     ;;("C-c n" . consult-find)
+	     )      ;; Find files in the current directory
+      :custom
+      (consult-preview-key 'any)            ;; Preview results as you navigate
+      (consult-narrow-key "<")              ;; Narrow options while searching
+      :init
+      ;; Configure project root detection
+      (setq consult-project-root-function
+	    (lambda ()
+	      (when-let (project (project-current))
+		(car (project-roots project))))))
+#+end_src
+* Search
+** helm-swoop (active)
+#+begin_src emacs-lisp :tangle no
+  (use-package helm-swoop
+    :ensure t
+    :bind (("M-s s" . helm-swoop)  ;; Search in the current buffer
+           ("M-s S" . helm-multi-swoop)  ;; Search across multiple buffers
+           ("M-s p" . helm-multi-swoop-projectile))  ;; Search in project (if projectile is used)
+    :config
+    (setq helm-swoop-speed-or-color t)  ;; Enable faster searching
+    (setq helm-swoop-use-fuzzy-match t))  ;; Enable fuzzy matching
+(with-eval-after-load 'helm-swoop
+  (define-key helm-swoop-map (kbd "j") 'helm-next-line)   ;; Move down
+  (define-key helm-swoop-map (kbd "k") 'helm-previous-line) ;; Move up
+  (define-key helm-swoop-map (kbd "h") 'backward-char)    ;; Move left
+  (define-key helm-swoop-map (kbd "l") 'forward-char)     ;; Move right
+  (define-key helm-swoop-map (kbd "C-l") 'helm-maybe-exit-minibuffer) ;; Select entry
+  (define-key helm-swoop-map (kbd "C-o") 'helm-swoop-other-window)    ;; Open in new window
+  (define-key helm-swoop-map (kbd "C-d") 'helm-swoop-kill)) ;; Kill selected match
+
 #+end_src
 * Plugins 
-** Evil (vim)
-#+begin_src emacs-lisp
-  (use-package evil
-    :init
-    (setq evil-want-C-u-scroll t)
-    :config
-    (evil-mode 1)
-    (setq select-enable-clipboard t)
-    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-    (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
-  )
-
-#+end_src
 ** Org Roam 
 #+begin_src emacs-lisp
   (use-package org-roam
@@ -132,12 +192,66 @@ Do more testing and research on make-backup-files
     (setq org-roam-directory satori-org-roam-directory))
 #+end_src
 * Org-mode
+** Styling
+*** Bullets
 #+begin_src emacs-lisp
- 
-  (add-hook 'org-mode-hook 'satori-disable-line-numbers)
+  (use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+#+end_src
+*** Fonts
+#+begin_src emacs-lisp
+   ;; Increase the size of various headings
+  (set-face-attribute 'org-document-title nil :font "Cantarell" :weight 'bold :height 1.3)
+
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "Cantarell" :weight 'medium :height (cdr face)))
+#+end_src
+** Hooks
+#+begin_src emacs-lisp
+   (add-hook 'org-mode-hook 'satori-disable-line-numbers)
 #+end_src
 * Hooks
 ** eshell
 #+begin_src emacs-lisp
 (add-hook 'eshell-mode-hook 'satori-disable-line-numbers)
+#+end_src
+* Global Keybindins
+#+begin_src emacs-lisp :tangle no
+  (global-set-key (kbd "C-x C-f") 'helm-find-files)  ;; Find files
+  (global-set-key (kbd "C-M-j") 'helm-buffers-list)  ;; Buffer list
+  (global-set-key (kbd "M-x") 'helm-M-x)            ;; Replace M-x with Helm
+  (global-set-key (kbd "C-s") 'helm-occur)
+#+end_src
+* Custom Functions
+** Calculate TODOes progress in org file
+#+begin_src emacs-lisp
+(defun satori-calculate-org-progress ()
+  "Calculate the overall progression percentage for TODO and DONE entries in the current Org buffer."
+  (interactive)
+  (let ((total-tasks 0)
+        (completed-tasks 0))
+    ;; Count all TODO and DONE entries in the buffer
+    (org-map-entries
+     (lambda ()
+       (setq total-tasks (1+ total-tasks))
+       (when (string= (org-get-todo-state) "DONE")
+         (setq completed-tasks (1+ completed-tasks)))))
+    ;; Calculate the percentage
+    (let ((progress (if (> total-tasks 0)
+                        (* 100 (/ (float completed-tasks) total-tasks))
+                      0)))
+      (message "Total Progression: %.2f%% (%d/%d completed)"
+               progress completed-tasks total-tasks)
+      progress)))
+
 #+end_src

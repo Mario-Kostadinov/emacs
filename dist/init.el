@@ -104,38 +104,6 @@
 :custom
 (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-;; Increase the size of various headings
-(set-face-attribute 'org-document-title nil :font "Cantarell" :weight 'bold :height 1.3)
-
-(dolist (face '((org-level-1 . 1.2)
-                (org-level-2 . 1.1)
-                (org-level-3 . 1.05)
-                (org-level-4 . 1.0)
-                (org-level-5 . 1.1)
-                (org-level-6 . 1.1)
-                (org-level-7 . 1.1)
-                (org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil :font "Cantarell" :weight 'medium :height (cdr face)))
-
 (add-hook 'org-mode-hook 'satori-disable-line-numbers)
 
 (add-hook 'eshell-mode-hook 'satori-disable-line-numbers)
-
-(defun satori-calculate-org-progress ()
-  "Calculate the overall progression percentage for TODO and DONE entries in the current Org buffer."
-  (interactive)
-  (let ((total-tasks 0)
-        (completed-tasks 0))
-    ;; Count all TODO and DONE entries in the buffer
-    (org-map-entries
-     (lambda ()
-       (setq total-tasks (1+ total-tasks))
-       (when (string= (org-get-todo-state) "DONE")
-         (setq completed-tasks (1+ completed-tasks)))))
-    ;; Calculate the percentage
-    (let ((progress (if (> total-tasks 0)
-                        (* 100 (/ (float completed-tasks) total-tasks))
-                      0)))
-      (message "Total Progression: %.2f%% (%d/%d completed)"
-               progress completed-tasks total-tasks)
-      progress)))
