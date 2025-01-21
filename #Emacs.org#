@@ -337,7 +337,8 @@ Do more testing and research on make-backup-files
 
 #+begin_src emacs-lisp
   (use-package vue-mode
-    :mode "\\.
+    :mode "\\.vue\\"
+    )
 #+end_src
 **** Webmode
 #+begin_src emacs-lisp :tangle no
