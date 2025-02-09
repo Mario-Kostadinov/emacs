@@ -1,8 +1,15 @@
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/") t)
+
+(unless package-archive-contents (package-refresh-contents))    ;; update packages
+(package-initialize)
+
 ;--- Environment variables ---
 ;--- Editor Styling ---
 (setq satori-font-size 200)                                   ;; font-size
 ;--- Themes ---
-(setq satori-theme 'doom-ayu-mirage)
+(setq satori-theme 'doom-acario-dark)
 ;--- UI Elements ---
 (setq satori-tool-bar 0)                                      ;; tool bar
 (setq satori-menu-bar 0)                                      ;; menu bar
@@ -11,17 +18,11 @@
 ;; --- General Settings ---
 (setq satori-backups nil)
 ;; --- use-package ---
+;; Maybe I should remove this and enable it for each package
 (setq use-package-always-ensure t)                            ;; auto-install missing packages
 ;; --- Org Roam ---
 (setq satori-org-roam-directory "~/projects/satori-notes")    ;; org roam notes directory
 ;; --- project.el ---
-
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
-
-(unless package-archive-contents (package-refresh-contents))    ;; update packages
-(package-initialize)
 
 (use-package doom-themes
     :ensure t
@@ -32,14 +33,9 @@
     (doom-themes-org-config)
     )
 
-(load-theme satori-theme t)
+;;(load-theme satori-theme t)
 
 (set-face-attribute 'default nil :height satori-font-size)
-
-(tool-bar-mode satori-tool-bar)
-(menu-bar-mode satori-menu-bar)			
-(scroll-bar-mode satori-scroll-bar)
-(set-fringe-mode satori-fringe-mode-padding)
 
 ;; --- modeline settings ---
 (display-time-mode 1)                   ;; display time
@@ -67,6 +63,12 @@
 :after vertico
 :init
 (marginalia-mode))
+
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-copy-env "PATH")
+  (exec-path-from-shell-initialize))
 
 (use-package project
   :ensure nil ;; project.el is built into Emacs, so no need to install
@@ -96,10 +98,10 @@
         (write-file (expand-file-name ".project" dir))))
     (message "Registered project: %s" dir)))
 
-(advice-add 'project-switch-project
-          :after
-          (lambda (&rest _)
-            (call-interactively 'project-find-file)))
+(setq project-vc-extra-root-markers '(
+                                    ".project"
+                                    ".git"
+                                    ))  ; xz-tools probably
 
 (use-package orderless
 :ensure t
@@ -124,7 +126,7 @@
        ("C-s" . consult-line)         ;; Line search, similar to Swiper
        ("C-x b" . consult-buffer)     ;; Enhanced buffer switching
        ("M-g g" . consult-goto-line)  ;; Go to a specific line
-       ("C-c p g" . consult-ripgrep)    ;; Search files with ripgrep
+       ;;("C-c p g" . consult-ripgrep)    ;; Search files with ripgrep
        ;;("C-c n" . consult-find)
        )      ;; Find files in the current directory
 :custom
@@ -187,6 +189,7 @@
     ;; Count all TODO and DONE entries in the buffer
     (org-map-entries
      (lambda ()
+
        (setq total-tasks (1+ total-tasks))
        (when (string= (org-get-todo-state) "DONE")
          (setq completed-tasks (1+ completed-tasks)))))
@@ -198,22 +201,23 @@
                progress completed-tasks total-tasks)
       progress)))
 
-(use-package tree-sitter
-  :hook ((js-mode . tree-sitter-mode)
-         (typescript-mode . tree-sitter-mode)
-         (vue-mode . tree-sitter-mode))
-  :config
-  (global-tree-sitter-mode))
+(defun satori-consult-rg-popup ()
+  "Spawn a popup window to run `consult-ripgrep` in the home directory."
+  (interactive)
+  (let ((default-directory (expand-file-name "~/")))
+    ;; Create a new frame for the popup
+    (with-selected-frame (make-frame '((name . "Ripgrep Search")
+                                       (width . 80)
+                                       (height . 24)
+                                       (minibuffer . t)))
+      ;; Run consult-ripgrep in the new frame
+      (consult-ripgrep))))
 
-(use-package tree-sitter-langs)
 
-(use-package vue-mode
-  :mode "\\.
 
-(use-package lsp-mode
-  :hook ((js-mode . lsp)
-         (typescript-mode . lsp)
-         (vue-mode . lsp))
-  :commands lsp
-  :config
-  (setq lsp-headerline-breadcrumb-enable t))
+
+
+(load-file "~/projects/emacs/.emacs.d/satori-packages/ui-elements.el")
+(load-file "~/projects/emacs/.emacs.d/satori-packages/autocomplete.el")
+(load-file "~/projects/emacs/.emacs.d/satori-packages/lsp.el")
+;;(load-file "~/projects/emacs/.emacs.d/satori-packages/webmode.el")

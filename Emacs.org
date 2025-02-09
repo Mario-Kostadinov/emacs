@@ -1,32 +1,37 @@
-#+title Emacs config
+#+title: Satori GNU Emacs Configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ~/projects/emacs/.emacs.d/init.el
 
-* Environment Variables
-#+begin_src emacs-lisp
-  ;--- Environment variables ---
-  ;--- Editor Styling ---
-  (setq satori-font-size 200)                                   ;; font-size
-  ;--- Themes ---
-  (setq satori-theme 'doom-ayu-mirage)
-  ;--- UI Elements ---
-  (setq satori-tool-bar 0)                                      ;; tool bar
-  (setq satori-menu-bar 0)                                      ;; menu bar
-  (setq satori-scroll-bar 0)                                    ;; scroll bar
-  (setq satori-fringe-mode-padding 0)                           ;; horizontal padding
-  ;; --- General Settings ---
-  (setq satori-backups nil)
-  ;; --- use-package ---
-  (setq use-package-always-ensure t)                            ;; auto-install missing packages
-  ;; --- Org Roam ---
-  (setq satori-org-roam-directory "~/projects/satori-notes")    ;; org roam notes directory
-  ;; --- project.el ---
- 
-#+end_src 
-* Packages
-** Todoes [0/2]
-*** TODO What does package-initialise do?
-*** TODO What does  (unless package-archive-contents (package-refresh-contents)) do?
-** Config 
+This will be the one place where both configuration and documenting will take place. I was considering to separate both things but that defeats the purpose of learning this amazing tool.
+
+What are the goals of this project?
+- learn something deeply
+- organise my information (knowledge hub)
+- coding
+- task management system
+- to allow me to achieve my life goals
+-------------------------------------------------------------------------------
+I don't think we can create a good outline from the get go. This is something will evolve as my knowledge and expetertise grows. Sections will contain not only configuration but also learning the various functions and settings.
+* Personal notes, ideas and reflections
+- I think I got used to emacs keybindins. Vim is also nice, but learning to do things the 'emacs way' is paying of <2025-01-25 Sat 12:38>
+* TODOes and Ideas [0/2]
+** TODO abbreviation for a seprate line
+maybe abbrivations should begin a prefix ~s_~. Then maybe ~s_s~ could create a seperator.
+** Org Mode [0/1]
+*** TODO Create a buffer list with todo items from the current buffer only.
+Maybe it can be display on the right hand side and clicking on a todo it can navigate me in the main buffer as well.
+* GNU Emacs Manual
+Single page HTML manual: https://www.gnu.org/software/emacs/manual/html_mono/emacs.html
+Current Progress: https://www.gnu.org/software/emacs/manual/html_mono/emacs.html#Screen
+* GNU Emacs essential concepts
+** Echo area
+This is the area at the very bottom of the screen. There we can the key combinations for instance. Or when we get promps to save files with ~C-x s~
+** buffers
+** minibuffer
+** windows
+** elisp
+* Package Managent
+First part of any GNU Emacs is the package management.
+The built in package manager in GNU Emacs is ~project.el~
 #+begin_src emacs-lisp
   (require 'package)
   (add-to-list 'package-archives
@@ -35,8 +40,80 @@
   (unless package-archive-contents (package-refresh-contents))    ;; update packages
   (package-initialize)
 #+end_src
-* Visuals 
+* Appearance
+** Base UI Elements
+#+begin_src emacs-lisp :tangle ~/projects/emacs/.emacs.d/satori-packages/ui-elements.el
+(tool-bar-mode 0)
+(menu-bar-mode 0)			
+(scroll-bar-mode 0)
+(set-fringe-mode 0)
+#+end_src
+** Modeline
 ** Theme
+* Org Mode
+* Knowledge Base
+Could have org roam
+* Bookmarks
+* Integrated Development Environment (IDE)
+** LSP Mode
+#+begin_src emacs-lisp :tangle ~/projects/emacs/.emacs.d/satori-packages/lsp.el
+  (use-package lsp-mode
+    :init
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    (setq lsp-keymap-prefix "C-c l")
+    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+           (web-mode . lsp)
+           ;; if you want which-key integration
+           )
+    :commands lsp)
+#+end_src
+** Webmode
+#+begin_src emacs-lisp :tangle ~/projects/emacs/.emacs.d/satori-packages/webmode.el
+  (use-package web-mode
+    :ensure t)
+  (setq auto-mode-alist
+        (append
+         '(("\\.vue\\'" . web-mode)   ;; Use web-mode for .vue files
+           ("\\.ts\\'" . web-mode)    ;; Use web-mode for .ts files
+           ("\\.js\\'" . web-mode))   ;; Use web-mode for .js files
+         auto-mode-alist))
+
+#+end_src
+* AutoComplete
+Company is a text and code completion framework for Emacs. The name stands for "complete anything". It uses pluggable back-ends and front-ends to retrieve and display completion candidates.
+#+begin_src emacs-lisp :tangle ~/projects/emacs/.emacs.d/satori-packages/autocomplete.el
+  (use-package company
+    :hook (after-init . global-company-mode))
+#+end_src
+* --- DEPRECATED ---
+Since I don't want to create a new file and start from scratch I will keep this in here until a find a better place for them.
+** Environment Variables (deprecated)
+There variables are no longer used
+#+begin_src emacs-lisp
+  ;--- Environment variables ---
+  ;--- Editor Styling ---
+  (setq satori-font-size 200)                                   ;; font-size
+  ;--- Themes ---
+  (setq satori-theme 'doom-acario-dark)
+  ;--- UI Elements ---
+  (setq satori-tool-bar 0)                                      ;; tool bar
+  (setq satori-menu-bar 0)                                      ;; menu bar
+  (setq satori-scroll-bar 0)                                    ;; scroll bar
+  (setq satori-fringe-mode-padding 0)                           ;; horizontal padding
+  ;; --- General Settings ---
+  (setq satori-backups nil)
+  ;; --- use-package ---
+  ;; Maybe I should remove this and enable it for each package
+  (setq use-package-always-ensure t)                            ;; auto-install missing packages
+  ;; --- Org Roam ---
+  (setq satori-org-roam-directory "~/projects/satori-notes")    ;; org roam notes directory
+  ;; --- project.el ---
+
+#+end_src 
+** Packages Managers
+*** Config 
+** Visuals 
+*** Theme
 #+begin_src emacs-lisp
   (use-package doom-themes
       :ensure t
@@ -47,32 +124,25 @@
       (doom-themes-org-config)
       )
   
-  (load-theme satori-theme t)
+  ;;(load-theme satori-theme t)
 #+end_src
-** Font Size
+*** Font Size
 #+begin_src emacs-lisp
  (set-face-attribute 'default nil :height satori-font-size)
 #+end_src
-** UI Elements
-#+begin_src emacs-lisp
-(tool-bar-mode satori-tool-bar)
-(menu-bar-mode satori-menu-bar)			
-(scroll-bar-mode satori-scroll-bar)
-(set-fringe-mode satori-fringe-mode-padding)
-#+end_src
-** Modeline
+*** Modeline
 #+begin_src emacs-lisp
   ;; --- modeline settings ---
   (display-time-mode 1)                   ;; display time 
 #+end_src
-** Line Numbers
+*** Line Numbers
 #+begin_src emacs-lisp
 (global-display-line-numbers-mode t)
 
 (defun satori-disable-line-numbers ()
    (display-line-numbers-mode 0))
 #+end_src
-** Visual fill column
+*** Visual fill column
 https://codeberg.org/joostkremers/visual-fill-column
 #+begin_src emacs-lisp
     (use-package visual-fill-column
@@ -82,19 +152,19 @@ https://codeberg.org/joostkremers/visual-fill-column
       )
   (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
 #+end_src
-* General Settings
-** Backups
+** General Settings
+*** Backups
 Do more testing and research on make-backup-files
 #+begin_src emacs-lisp
 (setq make-backup-files satori-backups)
 #+end_src
-** Save History
+*** Save History
 #+begin_src emacs-lisp
 (use-package savehist
   :init
   (savehist-mode))
 #+end_src
-** Magnolia
+*** Magnolia
 #+begin_src emacs-lisp
   (use-package marginalia
   :ensure t
@@ -102,8 +172,17 @@ Do more testing and research on make-backup-files
   :init
   (marginalia-mode))
 #+end_src
-* Project Management
-** project.el
+*** PATH Variable
+I had issues with lsp-mode that couldn't download ts and vue packages via npm and this  fixed the issue
+#+begin_src emacs-lisp
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-copy-env "PATH")
+  (exec-path-from-shell-initialize))
+#+end_src
+** Project Management
+*** project.el
 #+begin_src emacs-lisp
   (use-package project
     :ensure nil ;; project.el is built into Emacs, so no need to install
@@ -132,16 +211,17 @@ Do more testing and research on make-backup-files
         (with-temp-buffer
           (write-file (expand-file-name ".project" dir))))
       (message "Registered project: %s" dir)))
-
-  (advice-add 'project-switch-project
-            :after
-            (lambda (&rest _)
-              (call-interactively 'project-find-file)))
-
 #+end_src
-** projectile
-* Completion Frameworks
-** Orderless
+**** Adding non-vc folders as projects
+#+begin_src emacs-lisp
+  (setq project-vc-extra-root-markers '(
+                                      ".project"
+                                      ".git"
+                                      ))  ; xz-tools probably
+#+end_src
+*** projectile
+** Completion Frameworks
+*** Orderless
 #+begin_src emacs-lisp
   (use-package orderless
   :ensure t
@@ -150,7 +230,7 @@ Do more testing and research on make-backup-files
   (completion-category-defaults nil)    ;; Allow orderless for all categories
   )
 #+end_src
-** Helm
+*** Helm
 #+begin_src emacs-lisp :tangle no
   (use-package helm
     :ensure t
@@ -178,7 +258,7 @@ Do more testing and research on make-backup-files
 #+end_src
 
 #+RESULTS: 
-** Vertico
+*** Vertico
 #+begin_src emacs-lisp
   ;; Enable vertico
 (use-package vertico
@@ -190,7 +270,7 @@ Do more testing and research on make-backup-files
   :init
   (vertico-mode))
 #+end_src
-** Consult
+*** Consult
 #+begin_src emacs-lisp
       (use-package consult
       :ensure t
@@ -198,7 +278,7 @@ Do more testing and research on make-backup-files
 	     ("C-s" . consult-line)         ;; Line search, similar to Swiper
 	     ("C-x b" . consult-buffer)     ;; Enhanced buffer switching
 	     ("M-g g" . consult-goto-line)  ;; Go to a specific line
-	     ("C-c p g" . consult-ripgrep)    ;; Search files with ripgrep
+	     ;;("C-c p g" . consult-ripgrep)    ;; Search files with ripgrep
 	     ;;("C-c n" . consult-find)
 	     )      ;; Find files in the current directory
       :custom
@@ -211,8 +291,8 @@ Do more testing and research on make-backup-files
 	      (when-let (project (project-current))
 		(car (project-roots project))))))
 #+end_src
-* Search
-** helm-swoop (active)
+** Search
+*** helm-swoop (active)
 #+begin_src emacs-lisp :tangle no
   (use-package helm-swoop
     :ensure t
@@ -232,8 +312,8 @@ Do more testing and research on make-backup-files
   (define-key helm-swoop-map (kbd "C-d") 'helm-swoop-kill)) ;; Kill selected match
 
 #+end_src
-* Plugins 
-** Org Roam 
+** Plugins 
+*** Org Roam 
 #+begin_src emacs-lisp
   (use-package org-roam
     :bind(("C-c n l" . org-roam-buffer-toggle)
@@ -245,9 +325,9 @@ Do more testing and research on make-backup-files
     :config
     (setq org-roam-directory satori-org-roam-directory))
 #+end_src
-* Org-mode
-** Styling
-*** Bullets
+** Org-mode
+*** Styling
+**** Bullets
 #+begin_src emacs-lisp
   (use-package org-bullets
   :after org
@@ -255,9 +335,8 @@ Do more testing and research on make-backup-files
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 #+end_src
-*** Fonts
+**** Fonts
 #+begin_src emacs-lisp
-
   (require 'org-indent)
   ;; Increase the size of various headings
   (set-face-attribute 'org-document-title nil :font "Cantarell" :weight 'bold :height 1.3)
@@ -273,89 +352,135 @@ Do more testing and research on make-backup-files
     (set-face-attribute (car face) nil :font "Cantarell" :weight 'medium :height (cdr face)))
   (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
 #+end_src
-** Org Babel
+*** Org Babel
 #+begin_src emacs-lisp
   (require 'org-tempo)
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("cf" . "src conf"))
 #+end_src
-** Hooks
+*** Hooks
 #+begin_src emacs-lisp
   (add-hook 'org-mode-hook 'satori-disable-line-numbers)
   (add-hook 'org-mode-hook #'visual-line-mode)
   (add-hook 'org-mode-hook #'org-indent-mode)
 #+end_src
-* Hooks
-** eshell
+** Hooks
+*** eshell
 #+begin_src emacs-lisp
 (add-hook 'eshell-mode-hook 'satori-disable-line-numbers)
 #+end_src
-* Global Keybindins
+** Global Keybindins
 #+begin_src emacs-lisp :tangle no
   (global-set-key (kbd "C-x C-f") 'helm-find-files)  ;; Find files
   (global-set-key (kbd "C-M-j") 'helm-buffers-list)  ;; Buffer list
   (global-set-key (kbd "M-x") 'helm-M-x)            ;; Replace M-x with Helm
   (global-set-key (kbd "C-s") 'helm-occur)
-#+end_src
-* Custom Functions
-** Calculate TODOes progress in org file
+  ;;(global-set-key (kbd "RET") 'newline-and-indent)
+  #+end_src
+** Custom Functions
+*** Calculate TODOes progress in org file
 #+begin_src emacs-lisp
-(defun satori-calculate-org-progress ()
-  "Calculate the overall progression percentage for TODO and DONE entries in the current Org buffer."
+  (defun satori-calculate-org-progress ()
+    "Calculate the overall progression percentage for TODO and DONE entries in the current Org buffer."
+    (interactive)
+    (let ((total-tasks 0)
+          (completed-tasks 0))
+      ;; Count all TODO and DONE entries in the buffer
+      (org-map-entries
+       (lambda ()
+       
+         (setq total-tasks (1+ total-tasks))
+         (when (string= (org-get-todo-state) "DONE")
+           (setq completed-tasks (1+ completed-tasks)))))
+      ;; Calculate the percentage
+      (let ((progress (if (> total-tasks 0)
+                          (* 100 (/ (float completed-tasks) total-tasks))
+                        0)))
+        (message "Total Progression: %.2f%% (%d/%d completed)"
+                 progress completed-tasks total-tasks)
+        progress)))
+#+end_src
+*** Popup RG of emacs
+#+begin_src emacs-lisp
+(defun satori-consult-rg-popup ()
+  "Spawn a popup window to run `consult-ripgrep` in the home directory."
   (interactive)
-  (let ((total-tasks 0)
-        (completed-tasks 0))
-    ;; Count all TODO and DONE entries in the buffer
-    (org-map-entries
-     (lambda ()
-       (setq total-tasks (1+ total-tasks))
-       (when (string= (org-get-todo-state) "DONE")
-         (setq completed-tasks (1+ completed-tasks)))))
-    ;; Calculate the percentage
-    (let ((progress (if (> total-tasks 0)
-                        (* 100 (/ (float completed-tasks) total-tasks))
-                      0)))
-      (message "Total Progression: %.2f%% (%d/%d completed)"
-               progress completed-tasks total-tasks)
-      progress)))
+  (let ((default-directory (expand-file-name "~/")))
+    ;; Create a new frame for the popup
+    (with-selected-frame (make-frame '((name . "Ripgrep Search")
+                                       (width . 80)
+                                       (height . 24)
+                                       (minibuffer . t)))
+      ;; Run consult-ripgrep in the new frame
+      (consult-ripgrep))))
 
 #+end_src
-* Development
-** Frontend
-*** JS,TS,VUE3
-#+begin_src emacs-lisp
-(use-package tree-sitter
-  :hook ((js-mode . tree-sitter-mode)
-         (typescript-mode . tree-sitter-mode)
-         (vue-mode . tree-sitter-mode))
-  :config
-  (global-tree-sitter-mode))
-
-(use-package tree-sitter-langs)
+** Integrated Development Environment(IDE)
+*** Frontend
+**** JS,TS,VUE3
+#+begin_src emacs-lisp :tangle no
+  (use-package tree-sitter 
+    :hook ((js-mode . tree-sitter-mode)
+           (typescript-mode . tree-sitter-mode)
+           (vue-mode . tree-sitter-mode)
+           (web-mode . tree-sitter-mode)
+           )
+    :config
+    (global-tree-sitter-mode))
+ 
+  (use-package tree-sitter-langs
+  :after tree-sitter)
 #+end_src
 
-#+begin_src emacs-lisp
-  (use-package vue-mode
-    :mode "\\.
-#+end_src
-**** Webmode
+***** Webmode
 #+begin_src emacs-lisp :tangle no
   (use-package web-mode
-  :mode ("\\.vue\\'")
-  :config
-  (setq web-mode-enable-auto-quoting nil
-        web-mode-script-padding 0
-        web-mode-style-padding 0
-        web-mode-enable-engine-detection t))
+    :ensure t)
+  (setq auto-mode-alist
+        (append
+         '(("\\.vue\\'" . web-mode)   ;; Use web-mode for .vue files
+           ("\\.ts\\'" . web-mode)    ;; Use web-mode for .ts files
+           ("\\.js\\'" . web-mode))   ;; Use web-mode for .js files
+         auto-mode-alist))
 
-   (setq web-mode-content-types-alist
-      '(("jsx"  . "\\.vue\\'")
-        ("javascript" . "\\.vue\\'")))
 #+end_src
-** Backend
-** LSP
+
+***** Typescript Mode
 #+begin_src emacs-lisp
+
+#+end_src
+***** Prettier
+#+begin_src emacs-lisp :tangle no
+  (use-package prettier 
+    :hook (
+          (web-mode . prettier-mode)
+          )
+    )
+#+end_src
+*** Backend
+*** LSP
+
+#+begin_src emacs-lisp :tangle no
+  (use-package lsp-mode
+    :init
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    (setq lsp-keymap-prefix "C-c l")
+    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+           (web-mode . lsp)
+           ;; if you want which-key integration
+           )
+    :commands lsp)
+
+  ;; optionally
+  (use-package lsp-ui
+    :hook (
+           (web-mode . lsp-ui-mode)
+           )
+    :commands lsp-ui-mode)
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
 (use-package lsp-mode
   :hook ((js-mode . lsp)
          (typescript-mode . lsp)
@@ -365,5 +490,16 @@ Do more testing and research on make-backup-files
   (setq lsp-headerline-breadcrumb-enable t))
 
 #+end_src
-* Tests
 
+** Tests
+#+begin_src emacs-lisp
+
+#+end_src
+
+* Init File
+#+begin_src emacs-lisp :tangle ~/projects/emacs/.emacs.d/init.el
+  (load-file "~/projects/emacs/.emacs.d/satori-packages/ui-elements.el")
+  (load-file "~/projects/emacs/.emacs.d/satori-packages/autocomplete.el")
+  (load-file "~/projects/emacs/.emacs.d/satori-packages/lsp.el")
+  ;;(load-file "~/projects/emacs/.emacs.d/satori-packages/webmode.el")
+#+end_src
