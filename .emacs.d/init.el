@@ -215,9 +215,10 @@
 
 
 
-
-
 (load-file "~/projects/emacs/.emacs.d/satori-packages/ui-elements.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/autocomplete.el")
+;; IDE SETUP
 (load-file "~/projects/emacs/.emacs.d/satori-packages/lsp.el")
-;;(load-file "~/projects/emacs/.emacs.d/satori-packages/webmode.el")
+(load-file "~/projects/emacs/.emacs.d/satori-packages/webmode.el")
+(load-file "~/projects/emacs/.emacs.d/satori-packages/prettier.el")
+;;(load-file "~/projects/emacs/.emacs.d/satori-packages/treesitter.el")

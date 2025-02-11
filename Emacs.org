@@ -60,12 +60,14 @@ Could have org roam
   (use-package lsp-mode
     :init
     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    ;;(setq lsp-prefer-capf t)
     (setq lsp-keymap-prefix "C-c l")
     :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
            (web-mode . lsp)
            ;; if you want which-key integration
            )
     :commands lsp)
+
 #+end_src
 ** Webmode
 #+begin_src emacs-lisp :tangle ~/projects/emacs/.emacs.d/satori-packages/webmode.el
@@ -79,11 +81,34 @@ Could have org roam
          auto-mode-alist))
 
 #+end_src
+** Prettier
+#+begin_src emacs-lisp :tangle ~/projects/emacs/.emacs.d/satori-packages/prettier.el
+  (use-package prettier 
+    :hook (
+          (web-mode . prettier-mode)
+          )
+    )
+#+end_src
+** Tree Sitter
+#+begin_src emacs-lisp :tangle ~/projects/emacs/.emacs.d/satori-packages/treesitter.el
+(use-package tree-sitter 
+    :hook ((js-mode . tree-sitter-mode)
+           (typescript-mode . tree-sitter-mode)
+           (vue-mode . tree-sitter-mode)
+           (web-mode . tree-sitter-mode)
+           )
+    :config
+    (global-tree-sitter-mode))
+ 
+  (use-package tree-sitter-langs
+  :after tree-sitter)
+#+end_src
 * AutoComplete
 Company is a text and code completion framework for Emacs. The name stands for "complete anything". It uses pluggable back-ends and front-ends to retrieve and display completion candidates.
 #+begin_src emacs-lisp :tangle ~/projects/emacs/.emacs.d/satori-packages/autocomplete.el
   (use-package company
     :hook (after-init . global-company-mode))
+  (setq company-idle-delay 0.01)
 #+end_src
 * --- DEPRECATED ---
 Since I don't want to create a new file and start from scratch I will keep this in here until a find a better place for them.
@@ -417,80 +442,15 @@ I had issues with lsp-mode that couldn't download ts and vue packages via npm an
 
 #+end_src
 ** Integrated Development Environment(IDE)
-*** Frontend
-**** JS,TS,VUE3
-#+begin_src emacs-lisp :tangle no
-  (use-package tree-sitter 
-    :hook ((js-mode . tree-sitter-mode)
-           (typescript-mode . tree-sitter-mode)
-           (vue-mode . tree-sitter-mode)
-           (web-mode . tree-sitter-mode)
-           )
-    :config
-    (global-tree-sitter-mode))
- 
-  (use-package tree-sitter-langs
-  :after tree-sitter)
-#+end_src
-
-***** Webmode
-#+begin_src emacs-lisp :tangle no
-  (use-package web-mode
-    :ensure t)
-  (setq auto-mode-alist
-        (append
-         '(("\\.vue\\'" . web-mode)   ;; Use web-mode for .vue files
-           ("\\.ts\\'" . web-mode)    ;; Use web-mode for .ts files
-           ("\\.js\\'" . web-mode))   ;; Use web-mode for .js files
-         auto-mode-alist))
-
-#+end_src
-
-***** Typescript Mode
-#+begin_src emacs-lisp
-
-#+end_src
-***** Prettier
-#+begin_src emacs-lisp :tangle no
-  (use-package prettier 
-    :hook (
-          (web-mode . prettier-mode)
-          )
-    )
-#+end_src
-*** Backend
 *** LSP
-
 #+begin_src emacs-lisp :tangle no
-  (use-package lsp-mode
-    :init
-    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-    (setq lsp-keymap-prefix "C-c l")
-    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-           (web-mode . lsp)
-           ;; if you want which-key integration
-           )
-    :commands lsp)
-
   ;; optionally
-  (use-package lsp-ui
-    :hook (
-           (web-mode . lsp-ui-mode)
-           )
-    :commands lsp-ui-mode)
+    (use-package lsp-ui
+      :hook (
+             (web-mode . lsp-ui-mode)
+             )
+      :commands lsp-ui-mode)
 #+end_src
-
-#+begin_src emacs-lisp :tangle no
-(use-package lsp-mode
-  :hook ((js-mode . lsp)
-         (typescript-mode . lsp)
-         (vue-mode . lsp))
-  :commands lsp
-  :config
-  (setq lsp-headerline-breadcrumb-enable t))
-
-#+end_src
-
 ** Tests
 #+begin_src emacs-lisp
 
@@ -500,6 +460,9 @@ I had issues with lsp-mode that couldn't download ts and vue packages via npm an
 #+begin_src emacs-lisp :tangle ~/projects/emacs/.emacs.d/init.el
   (load-file "~/projects/emacs/.emacs.d/satori-packages/ui-elements.el")
   (load-file "~/projects/emacs/.emacs.d/satori-packages/autocomplete.el")
+  ;; IDE SETUP
   (load-file "~/projects/emacs/.emacs.d/satori-packages/lsp.el")
-  ;;(load-file "~/projects/emacs/.emacs.d/satori-packages/webmode.el")
+  (load-file "~/projects/emacs/.emacs.d/satori-packages/webmode.el")
+  (load-file "~/projects/emacs/.emacs.d/satori-packages/prettier.el")
+  ;;(load-file "~/projects/emacs/.emacs.d/satori-packages/treesitter.el")
 #+end_src
