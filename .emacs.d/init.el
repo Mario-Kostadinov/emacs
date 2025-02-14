@@ -5,11 +5,79 @@
 (unless package-archive-contents (package-refresh-contents))    ;; update packages
 (package-initialize)
 
+(use-package orderless
+:ensure t
+:custom
+(completion-styles '(orderless basic)) ;; Add orderless for better matching
+(completion-category-defaults nil)    ;; Allow orderless for all categories
+)
+
+;; Enable vertico
+(use-package vertico
+  :custom
+  (vertico-scroll-margin 0) ;; Different scroll margin
+  (vertico-count 5) ;; Show more candidates
+  (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
+  (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
+  :init
+  (vertico-mode))
+
+(use-package consult
+:ensure t
+:bind (
+       ("C-s" . consult-line)         ;; Line search, similar to Swiper
+       ("C-x b" . consult-buffer)     ;; Enhanced buffer switching
+       ;;("C-x b o" . consult-buffer-other-window)
+       ("M-g g" . consult-goto-line)  ;; Go to a specific line
+       ;;("C-c p r" . consult-ripgrep)    ;; Search files with ripgrep
+       ;;("C-c n" . consult-find)
+       )      ;; Find files in the current directory
+:custom
+(consult-preview-key 'any)            ;; Preview results as you navigate
+(consult-narrow-key "<")              ;; Narrow options while searching
+:init
+;; Configure project root detection
+(setq consult-project-root-function
+      (lambda ()
+        (when-let (project (project-current))
+          (car (project-roots project))))))
+
+(use-package project
+  :ensure nil ;; project.el is built into Emacs, so no need to install
+ ;; :after (consult)
+  :bind-keymap ("C-c p" . project-prefix-map) ;; Bind project commands to C-c p
+  :bind (:map project-prefix-map
+              ("r" . consult-ripgrep)
+              )
+  :custom
+  (project-list-file "~/.emacs.d/projects") ;; Save project list here
+  (project-vc-extra-root-markers '(".project" ".git")) ;; Custom project markers
+  :config     
+  ;; Helper to register a directory as a project
+  )
+
+(setq project-vc-extra-root-markers '(
+                                    ".project"
+                                    ".git"
+                                    ))  ; xz-tools probably
+
+(defun satori-consult-rg-popup ()
+  "Spawn a popup window to run `consult-ripgrep` in the home directory."
+  (interactive)
+  (let ((default-directory (expand-file-name "~/")))
+    ;; Create a new frame for the popup
+    (with-selected-frame (make-frame '((name . "Ripgrep Search")
+                                       (width . 80)
+                                       (height . 24)
+                                       (minibuffer . t)))
+      ;; Run consult-ripgrep in the new frame
+      (consult-ripgrep))))
+
 ;--- Environment variables ---
 ;--- Editor Styling ---
 (setq satori-font-size 200)                                   ;; font-size
 ;--- Themes ---
-(setq satori-theme 'doom-acario-dark)
+(setq satori-theme 'doom-outrun-electric)
 ;--- UI Elements ---
 (setq satori-tool-bar 0)                                      ;; tool bar
 (setq satori-menu-bar 0)                                      ;; menu bar
@@ -33,7 +101,7 @@
     (doom-themes-org-config)
     )
 
-;;(load-theme satori-theme t)
+(load-theme satori-theme t)
 
 (set-face-attribute 'default nil :height satori-font-size)
 
@@ -69,75 +137,6 @@
   :config
   (exec-path-from-shell-copy-env "PATH")
   (exec-path-from-shell-initialize))
-
-(use-package project
-  :ensure nil ;; project.el is built into Emacs, so no need to install
-  :bind-keymap
-  ("C-c p" . project-prefix-map) ;; Bind project commands to C-c p
-  :custom
-  (project-list-file "~/.emacs.d/projects") ;; Save project list here
-  (project-vc-extra-root-markers '(".project" ".git")) ;; Custom project markers
-  :config
-  ;; Define project search paths
-  (defun my/project-directories ()
-    "Return a list of directories containing projects."
-    (list "~/projects/" "~/work/"))
-
-  ;; Dynamically add directories to known project roots
-  (advice-add 'project-known-project-roots
-              :override
-              (lambda ()
-                (mapcar #'file-truename (my/project-directories))))
-
-  ;; Helper to register a directory as a project
-  (defun my/register-project (dir)
-    "Register DIR as a project with project.el."
-    (interactive "DDirectory: ")
-    (unless (file-exists-p (expand-file-name ".project" dir))
-      (with-temp-buffer
-        (write-file (expand-file-name ".project" dir))))
-    (message "Registered project: %s" dir)))
-
-(setq project-vc-extra-root-markers '(
-                                    ".project"
-                                    ".git"
-                                    ))  ; xz-tools probably
-
-(use-package orderless
-:ensure t
-:custom
-(completion-styles '(orderless basic)) ;; Add orderless for better matching
-(completion-category-defaults nil)    ;; Allow orderless for all categories
-)
-
-;; Enable vertico
-(use-package vertico
-  :custom
-  (vertico-scroll-margin 0) ;; Different scroll margin
-  (vertico-count 10) ;; Show more candidates
-  (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
-  (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
-  :init
-  (vertico-mode))
-
-(use-package consult
-:ensure t
-:bind (
-       ("C-s" . consult-line)         ;; Line search, similar to Swiper
-       ("C-x b" . consult-buffer)     ;; Enhanced buffer switching
-       ("M-g g" . consult-goto-line)  ;; Go to a specific line
-       ;;("C-c p g" . consult-ripgrep)    ;; Search files with ripgrep
-       ;;("C-c n" . consult-find)
-       )      ;; Find files in the current directory
-:custom
-(consult-preview-key 'any)            ;; Preview results as you navigate
-(consult-narrow-key "<")              ;; Narrow options while searching
-:init
-;; Configure project root detection
-(setq consult-project-root-function
-      (lambda ()
-	(when-let (project (project-current))
-	  (car (project-roots project))))))
 
 (use-package org-roam
   :bind(("C-c n l" . org-roam-buffer-toggle)
@@ -181,40 +180,6 @@
 
 (add-hook 'eshell-mode-hook 'satori-disable-line-numbers)
 
-(defun satori-calculate-org-progress ()
-  "Calculate the overall progression percentage for TODO and DONE entries in the current Org buffer."
-  (interactive)
-  (let ((total-tasks 0)
-        (completed-tasks 0))
-    ;; Count all TODO and DONE entries in the buffer
-    (org-map-entries
-     (lambda ()
-
-       (setq total-tasks (1+ total-tasks))
-       (when (string= (org-get-todo-state) "DONE")
-         (setq completed-tasks (1+ completed-tasks)))))
-    ;; Calculate the percentage
-    (let ((progress (if (> total-tasks 0)
-                        (* 100 (/ (float completed-tasks) total-tasks))
-                      0)))
-      (message "Total Progression: %.2f%% (%d/%d completed)"
-               progress completed-tasks total-tasks)
-      progress)))
-
-(defun satori-consult-rg-popup ()
-  "Spawn a popup window to run `consult-ripgrep` in the home directory."
-  (interactive)
-  (let ((default-directory (expand-file-name "~/")))
-    ;; Create a new frame for the popup
-    (with-selected-frame (make-frame '((name . "Ripgrep Search")
-                                       (width . 80)
-                                       (height . 24)
-                                       (minibuffer . t)))
-      ;; Run consult-ripgrep in the new frame
-      (consult-ripgrep))))
-
-
-
 (load-file "~/projects/emacs/.emacs.d/satori-packages/ui-elements.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/autocomplete.el")
 ;; IDE SETUP
@@ -222,3 +187,4 @@
 (load-file "~/projects/emacs/.emacs.d/satori-packages/webmode.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/prettier.el")
 ;;(load-file "~/projects/emacs/.emacs.d/satori-packages/treesitter.el")
+(load-file "~/projects/emacs/.emacs.d/satori-packages/sassmode.el")
