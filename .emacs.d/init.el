@@ -42,24 +42,42 @@
         (when-let (project (project-current))
           (car (project-roots project))))))
 
-(use-package project
-  :ensure nil ;; project.el is built into Emacs, so no need to install
- ;; :after (consult)
-  :bind-keymap ("C-c p" . project-prefix-map) ;; Bind project commands to C-c p
-  :bind (:map project-prefix-map
-              ("r" . consult-ripgrep)
-              )
-  :custom
-  (project-list-file "~/.emacs.d/projects") ;; Save project list here
-  (project-vc-extra-root-markers '(".project" ".git")) ;; Custom project markers
-  :config     
-  ;; Helper to register a directory as a project
-  )
-
 (setq project-vc-extra-root-markers '(
                                     ".project"
                                     ".git"
                                     ))  ; xz-tools probably
+
+(use-package org-bullets
+:after org
+:hook (org-mode . org-bullets-mode)
+:custom
+(org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(require 'org-indent)
+;; Increase the size of various headings
+(set-face-attribute 'org-document-title nil :font "Cantarell" :weight 'bold :height 1.3)
+
+(dolist (face '((org-level-1 . 1.2)
+                (org-level-2 . 1.1)
+                (org-level-3 . 1.05)
+                (org-level-4 . 1.0)
+                (org-level-5 . 1.1)
+                (org-level-6 . 1.1)
+                (org-level-7 . 1.1)
+                (org-level-8 . 1.1)))
+  (set-face-attribute (car face) nil :font "Cantarell" :weight 'medium :height (cdr face)))
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+
+(require 'org-tempo)
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+(add-to-list 'org-structure-template-alist '("cf" . "src conf"))
+
+(add-hook 'org-mode-hook 'satori-disable-line-numbers)
+(add-hook 'org-mode-hook #'visual-line-mode)
+(add-hook 'org-mode-hook #'org-indent-mode)
+
+(add-hook 'eshell-mode-hook 'satori-disable-line-numbers)
 
 (defun satori-consult-rg-popup ()
   "Spawn a popup window to run `consult-ripgrep` in the home directory."
@@ -91,6 +109,16 @@
 ;; --- Org Roam ---
 (setq satori-org-roam-directory "~/projects/satori-notes")    ;; org roam notes directory
 ;; --- project.el ---
+
+(use-package org-roam
+  :bind(("C-c n l" . org-roam-buffer-toggle)
+        ("C-c n f" . org-roam-node-find)
+        ("C-c n i" . org-roam-node-insert)
+        ("C-c d c" . org-roam-dailies-capture-today)
+        ("C-c d s" . org-roam-dailies-goto-today)
+        )
+  :config
+  (setq org-roam-directory satori-org-roam-directory))
 
 (use-package doom-themes
     :ensure t
@@ -138,50 +166,10 @@
   (exec-path-from-shell-copy-env "PATH")
   (exec-path-from-shell-initialize))
 
-(use-package org-roam
-  :bind(("C-c n l" . org-roam-buffer-toggle)
-        ("C-c n f" . org-roam-node-find)
-        ("C-c n i" . org-roam-node-insert)
-        ("C-c d c" . org-roam-dailies-capture-today)
-        ("C-c d s" . org-roam-dailies-goto-today)
-        )
-  :config
-  (setq org-roam-directory satori-org-roam-directory))
-
-(use-package org-bullets
-:after org
-:hook (org-mode . org-bullets-mode)
-:custom
-(org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
-
-(require 'org-indent)
-;; Increase the size of various headings
-(set-face-attribute 'org-document-title nil :font "Cantarell" :weight 'bold :height 1.3)
-
-(dolist (face '((org-level-1 . 1.2)
-                (org-level-2 . 1.1)
-                (org-level-3 . 1.05)
-                (org-level-4 . 1.0)
-                (org-level-5 . 1.1)
-                (org-level-6 . 1.1)
-                (org-level-7 . 1.1)
-                (org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil :font "Cantarell" :weight 'medium :height (cdr face)))
-(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-
-(require 'org-tempo)
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("cf" . "src conf"))
-
-(add-hook 'org-mode-hook 'satori-disable-line-numbers)
-(add-hook 'org-mode-hook #'visual-line-mode)
-(add-hook 'org-mode-hook #'org-indent-mode)
-
-(add-hook 'eshell-mode-hook 'satori-disable-line-numbers)
-
 (load-file "~/projects/emacs/.emacs.d/satori-packages/ui-elements.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/autocomplete.el")
+;; Project Management
+(load-file "~/projects/emacs/.emacs.d/satori-packages/project.el")
 ;; IDE SETUP
 (load-file "~/projects/emacs/.emacs.d/satori-packages/lsp.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/webmode.el")
