@@ -1,4 +1,2 @@
-* How to run emacs in isolated environment with this config file?
-#+begin_src shell
-emacs -q -l init.el
-#+end_src
+* Satori Emacs
+This is my personal emacs configuration project.
