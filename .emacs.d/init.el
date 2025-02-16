@@ -22,51 +22,13 @@
   :init
   (vertico-mode))
 
-(use-package consult
-:ensure t
-:bind (
-       ("C-s" . consult-line)         ;; Line search, similar to Swiper
-       ("C-x b" . consult-buffer)     ;; Enhanced buffer switching
-       ;;("C-x b o" . consult-buffer-other-window)
-       ("M-g g" . consult-goto-line)  ;; Go to a specific line
-       ;;("C-c p r" . consult-ripgrep)    ;; Search files with ripgrep
-       ;;("C-c n" . consult-find)
-       )      ;; Find files in the current directory
-:custom
-(consult-preview-key 'any)            ;; Preview results as you navigate
-(consult-narrow-key "<")              ;; Narrow options while searching
-:init
-;; Configure project root detection
-(setq consult-project-root-function
-      (lambda ()
-        (when-let (project (project-current))
-          (car (project-roots project))))))
+
 
 (setq project-vc-extra-root-markers '(
                                     ".project"
                                     ".git"
                                     ))  ; xz-tools probably
 
-(use-package org-bullets
-:after org
-:hook (org-mode . org-bullets-mode)
-:custom
-(org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
-
-(require 'org-indent)
-;; Increase the size of various headings
-(set-face-attribute 'org-document-title nil :font "Cantarell" :weight 'bold :height 1.3)
-
-(dolist (face '((org-level-1 . 1.2)
-                (org-level-2 . 1.1)
-                (org-level-3 . 1.05)
-                (org-level-4 . 1.0)
-                (org-level-5 . 1.1)
-                (org-level-6 . 1.1)
-                (org-level-7 . 1.1)
-                (org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil :font "Cantarell" :weight 'medium :height (cdr face)))
-(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
 
 (require 'org-tempo)
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
@@ -166,6 +128,8 @@
   (exec-path-from-shell-copy-env "PATH")
   (exec-path-from-shell-initialize))
 
+(load-file "~/projects/emacs/.emacs.d/satori-packages/org/org.el")
+(load-file "~/projects/emacs/.emacs.d/satori-packages/consult.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/ui-elements.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/autocomplete.el")
 ;; Project Management

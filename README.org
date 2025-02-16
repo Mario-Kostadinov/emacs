@@ -1,2 +1,11 @@
-* Satori Emacs
-This is my personal emacs configuration project.
+#+title: Satori GNU Emacs Configuration
+
+This will be the one place where both configuration and documenting will take place. I was considering to separate both things but that defeats the purpose of learning this amazing tool.
+
+What are the goals of this project?
+- learn something deeply
+- organise my information (knowledge hub)
+- coding
+- task management system
+- to allow me to achieve my life goals
+
