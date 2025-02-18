@@ -134,9 +134,24 @@
 (load-file "~/projects/emacs/.emacs.d/satori-packages/autocomplete.el")
 ;; Project Management
 (load-file "~/projects/emacs/.emacs.d/satori-packages/project.el")
+;; Git
+(load-file "~/projects/emacs/.emacs.d/satori-packages/magit.el")
 ;; IDE SETUP
 (load-file "~/projects/emacs/.emacs.d/satori-packages/lsp.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/webmode.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/prettier.el")
 ;;(load-file "~/projects/emacs/.emacs.d/satori-packages/treesitter.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/sassmode.el")
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(magit sass-mode lsp-ui web-mode visual-fill-column vertico tree-sitter-langs prettier org-roam org-bullets orderless marginalia lsp-mode exec-path-from-shell doom-themes consult company)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
