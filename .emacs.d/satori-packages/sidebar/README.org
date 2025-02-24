@@ -1,0 +1,3 @@
+
+* Packages
+- https://github.com/jojojames/dired-sidebar

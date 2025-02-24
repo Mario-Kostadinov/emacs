@@ -148,7 +148,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(sudo-edit magit sass-mode lsp-ui web-mode visual-fill-column vertico tree-sitter-langs prettier org-roam org-bullets orderless marginalia lsp-mode exec-path-from-shell doom-themes consult company)))
+   '(all-the-icons-dired vscode-icon dired-sidebar all-the-icons sudo-edit magit sass-mode lsp-ui web-mode visual-fill-column vertico tree-sitter-langs prettier org-roam org-bullets orderless marginalia lsp-mode exec-path-from-shell doom-themes consult company)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
