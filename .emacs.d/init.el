@@ -69,18 +69,6 @@
 ;; Maybe I should remove this and enable it for each package
 (setq use-package-always-ensure t)                            ;; auto-install missing packages
 ;; --- Org Roam ---
-(setq satori-org-roam-directory "~/projects/satori-notes")    ;; org roam notes directory
-;; --- project.el ---
-
-(use-package org-roam
-  :bind(("C-c n l" . org-roam-buffer-toggle)
-        ("C-c n f" . org-roam-node-find)
-        ("C-c n i" . org-roam-node-insert)
-        ("C-c d c" . org-roam-dailies-capture-today)
-        ("C-c d s" . org-roam-dailies-goto-today)
-        )
-  :config
-  (setq org-roam-directory satori-org-roam-directory))
 
 (use-package doom-themes
     :ensure t
@@ -136,6 +124,8 @@
 (load-file "~/projects/emacs/.emacs.d/satori-packages/project.el")
 ;; Git
 (load-file "~/projects/emacs/.emacs.d/satori-packages/magit.el")
+;; Org Roam ;;
+(load-file "~/projects/emacs/.emacs.d/satori-packages/org/org-roam.el")
 ;; IDE SETUP
 (load-file "~/projects/emacs/.emacs.d/satori-packages/lsp.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/webmode.el")
@@ -148,7 +138,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(magit sass-mode lsp-ui web-mode visual-fill-column vertico tree-sitter-langs prettier org-roam org-bullets orderless marginalia lsp-mode exec-path-from-shell doom-themes consult company)))
+   '(sudo-edit magit sass-mode lsp-ui web-mode visual-fill-column vertico tree-sitter-langs prettier org-roam org-bullets orderless marginalia lsp-mode exec-path-from-shell doom-themes consult company)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
