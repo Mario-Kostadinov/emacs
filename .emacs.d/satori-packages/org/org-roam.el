@@ -12,18 +12,3 @@
   (setq org-roam-directory satori-org-roam-directory))
 
 
-;; Capture Templates
-(setq org-roam-capture-templates
-       '(("i" "Inbox" entry
-         "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n"
-         :target (file+head "Inbox.org"
-                            "#+title: Inbox\n\n* Inbox\n")
-         :unnarrowed t
-         :prepend t)
-
-        ("w" "Work Note" plain
-         "* Summary\n%?\n\n* Details\n"
-         :if-new (file+head "work/%<%Y%m%d%H%M%S>-${slug}.org"
-                            "#+title: ${title}\n#+filetags: work\n\n")
-         :unnarrowed t)))
-
