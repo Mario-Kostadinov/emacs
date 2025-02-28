@@ -5,8 +5,6 @@
 (unless package-archive-contents (package-refresh-contents))    ;; update packages
 (package-initialize)
 
-
-
 (use-package orderless
 :ensure t
 :custom
@@ -24,7 +22,7 @@
   :init
   (vertico-mode))
 
-(global-set-key (kbd "C-<return>") 'newline-and-indent)
+;;(global-set-key (kbd "C-<return>") 'newline-and-indent)
 
 
 (setq project-vc-extra-root-markers '(
