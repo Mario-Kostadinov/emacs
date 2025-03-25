@@ -117,6 +117,7 @@
   (exec-path-from-shell-copy-env "PATH")
   (exec-path-from-shell-initialize))
 
+(load-file "~/projects/emacs/.emacs.d/satori-packages/eldoc.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/org/org.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/consult.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/ui-elements.el")
@@ -126,7 +127,7 @@
 ;; Git
 (load-file "~/projects/emacs/.emacs.d/satori-packages/magit.el")
 ;; Org Roam ;;
-(load-file "~/projects/emacs/.emacs.d/satori-packages/org/org-roam.el")
+;;(load-file "~/projects/emacs/.emacs.d/satori-packages/org/org-roam.el")
 ;; IDE SETUP
 (load-file "~/projects/emacs/.emacs.d/satori-packages/lsp.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/webmode.el")
@@ -139,11 +140,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-<<<<<<< Updated upstream
-   '(sudo-edit magit sass-mode lsp-ui web-mode visual-fill-column vertico tree-sitter-langs prettier org-roam org-bullets orderless marginalia lsp-mode exec-path-from-shell doom-themes consult company)))
-=======
-   '(eglot-jl vue-mode all-the-icons-dired vscode-icon dired-sidebar all-the-icons sudo-edit magit sass-mode lsp-ui web-mode visual-fill-column vertico tree-sitter-langs prettier org-roam org-bullets orderless marginalia lsp-mode exec-path-from-shell doom-themes consult company)))
->>>>>>> Stashed changes
+   '(company consult doom-themes exec-path-from-shell lsp-ui magit
+	     marginalia orderless org-bullets org-roam sass-mode
+	     typescript-mode vertico visual-fill-column vue-mode
+	     web-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

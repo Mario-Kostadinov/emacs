@@ -3,7 +3,7 @@
  ;; :after (consult)
   :bind-keymap ("C-c p" . project-prefix-map) ;; Bind project commands to C-c p
   :bind (:map project-prefix-map
-              ("r" . consult-ripgrep)
+              ("r" . consult-grep)
               )
   :custom
   (project-list-file "~/.emacs.d/projects") ;; Save project list here
