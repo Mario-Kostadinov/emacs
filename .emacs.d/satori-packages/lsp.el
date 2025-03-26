@@ -15,3 +15,6 @@
             (web-mode . lsp-ui-mode)
             )
      :commands lsp-ui-mode)
+
+
+(setq lsp-file-watch-threshold nil)
