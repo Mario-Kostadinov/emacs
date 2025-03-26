@@ -56,36 +56,14 @@
 
 ;--- Environment variables ---
 ;--- Editor Styling ---
-(setq satori-font-size 200)                                   ;; font-size
-;--- Themes ---
-(setq satori-theme 'doom-outrun-electric)
-;--- UI Elements ---
-(setq satori-tool-bar 0)                                      ;; tool bar
-(setq satori-menu-bar 0)                                      ;; menu bar
-(setq satori-scroll-bar 0)                                    ;; scroll bar
-(setq satori-fringe-mode-padding 0)                           ;; horizontal padding
+
 ;; --- General Settings ---
 (setq satori-backups nil)
+(setq make-backup-files satori-backups)
 ;; --- use-package ---
 ;; Maybe I should remove this and enable it for each package
 (setq use-package-always-ensure t)                            ;; auto-install missing packages
-;; --- Org Roam ---
 
-(use-package doom-themes
-    :ensure t
-    :config
-    ;; Global settings (defaults)
-    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-          doom-themes-enable-italic t) ; if nil, italics is universally disabled
-    (doom-themes-org-config)
-    )
-
-(load-theme satori-theme t)
-
-(set-face-attribute 'default nil :height satori-font-size)
-
-;; --- modeline settings ---
-(display-time-mode 1)                   ;; display time
 
 (global-display-line-numbers-mode t)
 
@@ -99,7 +77,7 @@
     )
 (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
 
-(setq make-backup-files satori-backups)
+
 
 (use-package savehist
   :init
@@ -117,6 +95,8 @@
   (exec-path-from-shell-copy-env "PATH")
   (exec-path-from-shell-initialize))
 
+(load-file "~/projects/emacs/.emacs.d/satori-packages/themes.el")
+(load-file "~/projects/emacs/.emacs.d/satori-packages/modeline.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/eldoc.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/org/org.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/consult.el")
@@ -134,3 +114,4 @@
 ;;(load-file "~/projects/emacs/.emacs.d/satori-packages/prettier.el")
 ;;(load-file "~/projects/emacs/.emacs.d/satori-packages/treesitter.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/sassmode.el")
+(load-file "~/projects/emacs/.emacs.d/satori-packages/ide/ide.el")
