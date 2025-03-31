@@ -1,5 +1,4 @@
 (setq satori-org-roam-directory "~/projects/satori-notes")    ;; org roam notes directory
-;; --- project.el ---
 
 (use-package org-roam
   :bind(("C-c n l" . org-roam-buffer-toggle)
