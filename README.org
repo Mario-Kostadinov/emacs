@@ -9,3 +9,13 @@ What are the goals of this project?
 - task management system
 - to allow me to achieve my life goals
 
+
+* Integrated Development Environment
+
+** Frontend
+
+*** Typescript
+For typescript to work under lsp the npm package ~typescript~ needs to be globally installed.
+#+begin_src shell
+npm i -g typescript
+#+end_src
