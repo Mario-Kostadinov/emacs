@@ -5,40 +5,10 @@
 (unless package-archive-contents (package-refresh-contents))    ;; update packages
 (package-initialize)
 
-(add-hook 'org-mode-hook 'satori-disable-line-numbers)
-(add-hook 'org-mode-hook #'visual-line-mode)
-(add-hook 'org-mode-hook #'org-indent-mode)
-
-(add-hook 'eshell-mode-hook 'satori-disable-line-numbers)
-
-;; --- General Settings ---
-
-;; --- use-package ---
-;; Maybe I should remove this and enable it for each package
-(setq use-package-always-ensure t)                            ;; auto-install missing packages
-
-(global-display-line-numbers-mode t)
-
-(defun satori-disable-line-numbers ()
-   (display-line-numbers-mode 0))
-
-(use-package visual-fill-column
-    :config
-      (setq-default visual-fill-column-width 120)
-      (setq-default visual-fill-column-center-text t  )
-    )
-(add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
-
-(use-package savehist
-  :init
-  (savehist-mode))
-
-(use-package marginalia
-:ensure t
-:after vertico
-:init
-(marginalia-mode))
-
+(load-file "~/projects/emacs/.emacs.d/satori-packages/temp.el")
+(load-file "~/projects/emacs/.emacs.d/satori-packages/general.el")
+(load-file "~/projects/emacs/.emacs.d/satori-packages/external/marginalia.el")
+(load-file "~/projects/emacs/.emacs.d/satori-packages/external/visual-fill-column.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/shells.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/backups.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/completion.el")
@@ -62,3 +32,21 @@
 ;;(load-file "~/projects/emacs/.emacs.d/satori-packages/treesitter.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/sassmode.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/ide/ide.el")
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(all-the-icons-dired company consult dired-sidebar doom-themes
+			 eglot-jl exec-path-from-shell lsp-ui magit
+			 marginalia orderless org-bullets org-roam
+			 prettier request restclient sass-mode
+			 sudo-edit vertico visual-fill-column
+			 vscode-icon vterm vue-mode web-mode)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
