@@ -10,13 +10,8 @@
           )
      :commands lsp)
  (setq lsp-headerline-breadcrumb-enable nil)
-(use-package lsp-ui
-     :hook (
-            (web-mode . lsp-ui-mode)
-            )
-     :commands lsp-ui-mode)
 
 
 (setq lsp-file-watch-threshold nil)
 (setq lsp-enable-indentation nil)
-(setq lsp-enable-on-type-formatting nil)
+
