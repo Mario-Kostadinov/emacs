@@ -14,4 +14,17 @@
 
 (setq lsp-file-watch-threshold nil)
 (setq lsp-enable-indentation nil)
+(setq lsp-signature-auto-activate nil)
+(setq company-tooltip-align-annotations nil)
+
+(with-eval-after-load 'company
+  ;; Only use tooltip frontend (popup)
+  (setq company-frontends
+        '(company-pseudo-tooltip-frontend
+          company-preview-if-just-one-frontend)))
+
+(setq gc-cons-threshold 100000000) ;; 100MB
+
+(setq read-process-output-max (* 1024 1024)) ;; 1MB
+(setq lsp-idle-delay 0.500)
 

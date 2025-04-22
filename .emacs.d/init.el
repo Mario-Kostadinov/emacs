@@ -18,7 +18,7 @@
 (load-file "~/projects/emacs/.emacs.d/satori-packages/org/org.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/consult.el")
 (load-file "~/projects/emacs/.emacs.d/satori-packages/ui-elements.el")
-;; (load-file "~/projects/emacs/.emacs.d/satori-packages/autocomplete.el")
+(load-file "~/projects/emacs/.emacs.d/satori-packages/autocomplete.el")
 ;; Project Management
 (load-file "~/projects/emacs/.emacs.d/satori-packages/project.el")
 ;; Git
@@ -37,13 +37,9 @@
    '("0325a6b5eea7e5febae709dab35ec8648908af12cf2d2b569bedc8da0a3a81c1"
      default))
  '(package-selected-packages
-   '(all-the-icons-dired company consult dired-sidebar doom-themes
-			 eglot-jl exec-path-from-shell lsp-ui magit
-			 marginalia orderless org-bullets org-roam
-			 prettier request restclient sass-mode
-			 sudo-edit tree-sitter tree-sitter-langs
-			 vertico visual-fill-column vscode-icon vterm
-			 vue-mode web-mode)))
+   '(company consult doom-themes exec-path-from-shell lsp-mode lsp-ui
+	     magit marginalia orderless org-bullets org-roam sass-mode
+	     tree-sitter-langs vertico visual-fill-column web-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
