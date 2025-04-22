@@ -26,24 +26,20 @@
 ;; Org Roam ;;
 (load-file "~/projects/emacs/.emacs.d/satori-packages/org/org-roam.el")
 ;; IDE SETUP
-(load-file "~/projects/emacs/.emacs.d/satori-packages/lsp.el")
-(load-file "~/projects/emacs/.emacs.d/satori-packages/webmode.el")
-;;(load-file "~/projects/emacs/.emacs.d/satori-packages/prettier.el")
-;;(load-file "~/projects/emacs/.emacs.d/satori-packages/treesitter.el")
-(load-file "~/projects/emacs/.emacs.d/satori-packages/sassmode.el")
+
 (load-file "~/projects/emacs/.emacs.d/satori-packages/ide/ide.el")
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("0325a6b5eea7e5febae709dab35ec8648908af12cf2d2b569bedc8da0a3a81c1"
+     default))
  '(package-selected-packages
-   '(all-the-icons-dired company consult dired-sidebar doom-themes
-			 eglot-jl exec-path-from-shell lsp-ui magit
-			 marginalia orderless org-bullets org-roam
-			 prettier request restclient sass-mode
-			 sudo-edit vertico visual-fill-column
-			 vscode-icon vterm vue-mode web-mode)))
+   '(company consult doom-themes exec-path-from-shell lsp-mode lsp-ui
+	     magit marginalia orderless org-bullets org-roam sass-mode
+	     tree-sitter-langs vertico visual-fill-column web-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
