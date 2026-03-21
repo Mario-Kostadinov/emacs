@@ -1,0 +1,6 @@
+elpa/
+.cache/
+tree-sitter/
+eln-cache/
+auto-save-list/
+url/

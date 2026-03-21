@@ -1,5 +1,5 @@
 ;--- Themes ---
-(setq satori-theme 'doom-outrun-electric)
+(setq satori-theme 'doom-snazzy)
 
 (use-package doom-themes
     :ensure t

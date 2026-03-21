@@ -1,0 +1,660 @@
+;; -*- lexical-binding: t; -*-
+
+;; Suppress byte-compiler warnings for obsolete macros/functions.
+;; These typically come from upstream packages that haven't yet
+;; caught up with the current Emacs version — not from your own config.
+;; Remove this if you ever want full warning visibility during debugging.
+(setq byte-compile-warnings '(not obsolete))
+;;(add-to-list 'default-frame-alist '(undecorated . t))
+
+;; ===========================================================
+;; SECTION UI
+;; ===========================================================
+(defun satori/set-font-size(fontSize)
+  (set-face-attribute 'default nil :height fontSize))
+
+(defun satori/disable-various-ui-elements()
+  (print "Disabling various ui elements")
+  (tool-bar-mode 0)    ;; Hide the icon toolbar
+  (menu-bar-mode 0)    ;; Hide the top menu bar
+  (scroll-bar-mode 0)  ;; Hide scrollbars
+  (set-fringe-mode 0)  ;; Remove fringes (thin margins on left/right of buffer)
+)
+
+
+
+;; Apple fix
+;; Removes the native macOS title bar and rounded window chrome
+;; Allow Emacs to resize pixel-by-pixel instead of snapping to character grid.
+;; Fixes window gaps when using tiling window managers like AeroSpace.
+(add-to-list 'default-frame-alist '(undecorated . t))
+
+(defun satori/apply-macos-fix()
+  (if (eq system-type 'darwin)
+      (print "Apply Macos Fix")
+
+    (setq frame-resize-pixelwise t)
+    
+  )
+)
+;; ===========================================================
+;; SECTION UTILITY FUNCTIONS
+;; ===========================================================
+
+(defun satori/enable-line-numbers-mode()
+  "Enable line numbers mode"
+  (display-line-numbers-mode 1))
+(setq display-line-numbers-type 'relative)
+
+
+
+;; ----- MAJOR MODES ----------
+;; ----- emacs-lisp mode ---------
+
+(defun satori/emacs-lisp-mode()
+  (add-hook 'emacs-lisp-mode-hook #'satori/enable-line-numbers-mode)
+)
+
+;; ----- EXTERNAL PACKAGES -------
+
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/") t)
+
+(unless package-archive-contents (package-refresh-contents))    ;; update packages
+(package-initialize)
+
+;; ===========================================================
+;; SECTION THEMES
+;; Includes packages for themes
+;; ===========================================================
+(use-package ef-themes
+  :ensure t
+  :config
+  (load-theme 'ef-dream t))
+
+;; ===========================================================
+;; SECTION MODELINE
+;; Includes packages for themes
+;; ===========================================================
+
+(defun satori/set-modeline()
+  (print "Setting modeline settings")
+  (display-time-mode 1)
+  (setq mode-line-mule-info nil)
+  (setq mode-line-percent-position t)
+  (setq display-time-format "%H:%M")
+  (setq display-time-24hr-format t)
+)
+
+;; =============================================================
+;; SECTION COMPLETION FRAMEWORK: Consult + Vertico + Orderless
+;;
+;; These three packages form a cohesive completion stack:
+;;   - Vertico  → the UI (vertical candidate list in minibuffer)
+;;   - Orderless → the matching engine (flexible, fuzzy-ish)
+;;   - Consult  → the commands (search, buffer switch, grep, etc.)
+;; =============================================================
+
+
+;; -------------------------------------------------------------
+;; SECTION CONSULT — Enhanced search and navigation commands
+;;
+;; Consult provides drop-in replacements for built-in commands
+;; (like switch-to-buffer, isearch) but with live previews,
+;; richer candidate display, and integration with Vertico.
+;; -------------------------------------------------------------
+(use-package consult
+  :ensure t
+  :bind (
+         ;; Replace the default incremental search (isearch) with
+         ;; consult-line, which shows all matching lines live in
+         ;; the minibuffer and jumps to them on selection.
+         ("C-s" . consult-line)
+
+         ;; Replace the default buffer switcher with consult-buffer,
+         ;; which merges buffers, recent files, and bookmarks into
+         ;; one unified, searchable list.
+         ("C-x b" . consult-buffer)
+
+         ;; --- Ideas for additional bindings ---
+         ;; ("M-y"   . consult-yank-pop)    ;; Searchable kill-ring (replaces M-y)
+         ;; ("C-x p f" . consult-project-buffer) ;; Buffers scoped to current project
+         ;; ("M-g g" . consult-goto-line)   ;; Jump to line by number
+         ;; ("M-g o" . consult-outline)     ;; Jump to any heading in the buffer
+         ;; ("M-s r" . consult-ripgrep)     ;; Live ripgrep across your project
+         ;; ("M-s f" . consult-find)        ;; Find files by name in project
+         )
+
+  :config
+  ;; consult-line searches only the visible portion by default.
+  ;; Setting this to t makes it search the entire buffer always.
+  ;; (setq consult-line-start-from-top t)
+
+  ;; Preview is shown automatically as you navigate candidates.
+  ;; You can throttle this if previews feel slow on large buffers.
+  ;; (setq consult-preview-key "M-.")  ;; Only preview on M-. instead of automatically
+  )
+
+
+;; -------------------------------------------------------------
+;; SECTION VERTICO — Vertical minibuffer completion UI
+;;
+;; Vertico replaces the default horizontal completion display
+;; with a vertical list directly in the minibuffer. It is
+;; intentionally minimal — it only changes the UI, leaving
+;; filtering/sorting to Orderless and Marginalia respectively.
+;; -------------------------------------------------------------
+(use-package vertico
+  :ensure t
+  :custom
+  ;; How many lines to keep visible above/below the selected candidate.
+  ;; 0 means the selected item can sit at the very top or bottom of the list.
+  (vertico-scroll-margin 0)
+
+  ;; Maximum number of candidates shown at once.
+  ;; Increase for more context, decrease to keep the minibuffer compact.
+  (vertico-count 5)
+
+  ;; When t, the minibuffer height grows and shrinks to fit the
+  ;; actual number of candidates (up to vertico-count).
+  (vertico-resize t)
+
+  ;; Allow wrapping: pressing <down> on the last candidate jumps
+  ;; back to the first, and vice versa. Handy for short lists.
+  (vertico-cycle t)
+
+  ;; --- Ideas for additional options ---
+  ;; (vertico-sort-function #'vertico-sort-history-alpha)
+  ;;   → Sorts candidates so recently used ones float to the top.
+  ;;     Requires the `savehist` built-in to be enabled (see below).
+  ;;
+  ;; Companion packages worth adding alongside Vertico:
+  ;;   - `marginalia`  → adds annotations (doc strings, file sizes, etc.)
+  ;;                     to candidates without altering matching behavior
+  ;;   - `savehist`    → persists minibuffer history across sessions so
+  ;;                     Vertico's history-based sorting actually works
+  ;;   Example:
+  ;;     (use-package marginalia :ensure t :init (marginalia-mode))
+  ;;     (use-package savehist   :init (savehist-mode))
+
+  :init
+  ;; Enable Vertico globally. Must be in :init (before the package loads)
+  ;; so the minibuffer UI is active from the very first completion.
+  (vertico-mode))
+
+
+;; -------------------------------------------------------------
+;; SECTION ORDERLESS — Flexible, space-separated completion matching
+;;
+;; Orderless changes *how* candidates are filtered. By default
+;; Emacs requires you to type a prefix of the candidate name.
+;; Orderless lets you type any space-separated tokens and matches
+;; candidates that contain all of them — in any order.
+;;
+;; Example: typing "buf sw" matches "switch-to-buffer" and
+;; "consult-buffer-switch", whereas the default style would not.
+;; -------------------------------------------------------------
+(use-package orderless
+  :ensure t
+  :custom
+  ;; Use orderless as the primary style, with `basic` as a fallback.
+  ;; `basic` is needed for certain completion categories (like TRAMP
+  ;; remote paths) that don't play well with orderless alone.
+  (completion-styles '(orderless basic))
+
+  ;; nil means "don't override matching style per category" — so
+  ;; orderless applies everywhere unless you add explicit exceptions below.
+  (completion-category-defaults nil)
+
+  ;; --- Ideas for fine-tuning ---
+  ;; Per-category overrides let you use a stricter style for specific
+  ;; contexts where orderless would be too permissive, e.g. file paths.
+  ;;
+  ;; (completion-category-overrides
+  ;;  '((file (styles basic partial-completion))))
+  ;;   → Use prefix matching for file/directory completion (M-x find-file)
+  ;;     while keeping orderless everywhere else.
+  ;;
+  ;; Orderless matching styles (mix and match via orderless-style-dispatchers):
+  ;;   orderless-literal         → token must appear literally
+  ;;   orderless-regexp          → token is treated as a regexp
+  ;;   orderless-initialism      → "fb" matches "foo-bar" (initials)
+  ;;   orderless-flex            → characters must appear in order but
+  ;;                               not necessarily adjacent ("fb" matches "foobar")
+  ;;
+  ;; Example dispatcher — prefix ! to negate a token:
+  ;; (setq orderless-style-dispatchers
+  ;;       '((lambda (pattern _index _total)
+  ;;           (when (string-prefix-p "!" pattern)
+  ;;             `(orderless-without-literal . ,(substring pattern 1))))))
+  )
+
+;; -------------------------------------------------------------
+;; SECTION SAVEHIST — Persist minibuffer history across Emacs sessions
+;;
+;; Built into Emacs — no download needed. Saves the contents of
+;; minibuffer history variables to disk so that Vertico's
+;; history-based sorting (recently used candidates first) works
+;; even after restarting Emacs.
+;;
+;; Without this, Vertico's history sorting resets every session
+;; and you lose the "muscle memory" benefit of frequent picks
+;; floating to the top.
+;; -------------------------------------------------------------
+(use-package savehist
+  :init
+  ;; Enable immediately — no :ensure t needed since it's built-in.
+  (savehist-mode)
+
+  ;; :custom
+  ;; Where to write the history file. Defaults to ~/.emacs.d/history
+  ;; but pointing it into a dedicated cache dir keeps things tidy.
+  ;; (savehist-file (expand-file-name "savehist" user-emacs-directory))
+
+  ;; How many entries to keep per history variable.
+  ;; Default is 100; raise it if you want deeper history for M-x etc.
+  ;; (history-length 300)
+
+  ;; By default only minibuffer histories are saved. You can extend
+  ;; this to arbitrary variables — useful for persisting things like
+  ;; your last used search regexp or compile command.
+  ;; (savehist-additional-variables
+  ;;  '(kill-ring                  ;; persist clipboard history
+  ;;    search-ring                ;; C-s search terms
+  ;;    regexp-search-ring         ;; C-M-s regexp terms
+  ;;    compile-history))          ;; M-x compile command history
+  )
+
+
+;; -------------------------------------------------------------
+;; SECTION MARGINALIA — Annotations in the minibuffer completion list
+;;
+;; Marginalia adds helpful metadata to the right of each candidate
+;; in Vertico's list — without changing how matching works at all.
+;;
+;; What you see depends on the context:
+;;   M-x commands   → keybinding + one-line docstring
+;;   C-x b buffers  → major mode + file path
+;;   find-file      → file permissions + size + modification date
+;;   describe-face  → a small color swatch of the face itself
+;;   bookmarks      → the bookmark target path
+;; -------------------------------------------------------------
+(use-package marginalia
+  :ensure t
+
+  ;; :custom
+  ;; Controls how wide the annotation column is allowed to grow.
+  ;; `truncate` cuts it off at the window edge (default, safe).
+  ;; `nil` lets it expand freely — can look ragged on narrow frames.
+  ;; (marginalia-max-highlight-column 120)
+
+  ;; Marginalia supports multiple annotator levels per category.
+  ;; Calling `marginalia-cycle` (bound below) rotates through them:
+  ;;   full  → all available metadata shown
+  ;;   light → abbreviated version
+  ;;   none  → no annotation
+  ;;
+  ;; You can set the initial level per category if you want, e.g.
+  ;; start with light annotations for buffers but full for commands:
+  ;; (marginalia-annotators
+  ;;  '((command . (marginalia-annotate-command marginalia-annotate-symbol))
+  ;;    (buffer  . (marginalia-annotate-buffer))))
+
+  :bind
+  ;; Cycle annotation verbosity without leaving the minibuffer.
+  ;; Handy when a candidate list is crowded and you want less noise,
+  ;; or conversely when you want the full docstring for an unfamiliar command.
+  (:map minibuffer-local-map
+        ("M-A" . marginalia-cycle))
+
+  :init
+  ;; Must be in :init so annotations are active on the very first
+  ;; minibuffer invocation, before lazy loading would kick in.
+  (marginalia-mode))
+
+
+;; -------------------------------------------------------------
+;; PREREQUISITES (outside Emacs)
+;;
+;; Install the TypeScript language server globally via npm:
+;;   npm install -g typescript typescript-language-server
+;;
+;; Verify it's on your PATH:
+;;   which typescript-language-server
+;; -------------------------------------------------------------
+
+
+;; -------------------------------------------------------------
+;; SECTION LSP-MODE — Language Server Protocol client
+;;
+;; lsp-mode connects Emacs to external language servers and
+;; provides the IDE features: completions, diagnostics, go-to-
+;; definition, find-references, hover docs, rename, etc.
+;; -------------------------------------------------------------
+(use-package lsp-mode
+  :ensure t
+  :hook
+  ;; Automatically start LSP when opening a TypeScript file.
+  ;; typescript-ts-mode is the built-in tree-sitter-based major mode
+  ;; (available from Emacs 29+). If you also use the older
+  ;; typescript-mode from MELPA, add that here too.
+  ((typescript-ts-mode . lsp-deferred)
+   ;; Start which-key hints for LSP bindings automatically
+   (lsp-mode           . lsp-enable-which-key-integration))
+
+  :custom
+  ;; lsp-deferred only starts the server when the buffer is visible,
+  ;; which avoids spinning up servers for background/hidden buffers.
+  ;; This is almost always what you want over plain `lsp`.
+
+  ;; Prefix for all lsp-mode keybindings. SPC-l is popular in
+  ;; evil/spacemacs setups; C-c l is the default for vanilla Emacs.
+  (lsp-keymap-prefix "C-c l")
+
+  ;; Show LSP breadcrumbs (current class/function path) in the
+  ;; header line at the top of the buffer. Set to nil to disable.
+  (lsp-headerline-breadcrumb-enable t)
+
+  ;; Disable the colored sideline diagnostics if you find them noisy.
+  ;; You'll still see errors in the mode line and via lsp-ui (below).
+  ;; (lsp-sideline-enable nil)
+
+  ;; How long (ms) to wait after you stop typing before the server
+  ;; re-checks the buffer. Lower = more responsive, higher = less CPU.
+  (lsp-idle-delay 0.5)
+
+  ;; lsp-mode caches server data here. Keep it out of your project dirs.
+  (lsp-server-install-dir (expand-file-name ".cache/lsp/" user-emacs-directory))
+  :config
+  ;; Tell lsp-mode to use typescript-language-server for these modes.
+  ;; This is automatic for ts but explicit registration avoids
+  ;; surprises if you add other JS-family modes later.
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection '("typescript-language-server" "--stdio"))
+    :activation-fn (lsp-activate-on "typescript-ts-mode")
+    :server-id 'ts-ls)))
+
+
+;; -------------------------------------------------------------
+;; SECTION LSP-UI — UI enhancements on top of lsp-mode
+;;
+;; Adds floating docs on hover, sideline error/warning overlays,
+;; and a peek UI for references/definitions without leaving the
+;; current buffer.
+;; -------------------------------------------------------------
+(use-package lsp-ui
+  :ensure t
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-position 'at-point)
+  (lsp-ui-sideline-enable t)
+  (lsp-ui-sideline-show-diagnostics t)
+  (lsp-ui-sideline-show-hover nil)
+  :bind (:map lsp-ui-mode-map
+              ("C-c l g r" . lsp-ui-peek-find-references)
+              ("C-c l g d" . lsp-ui-peek-find-definitions)))
+
+;; -------------------------------------------------------------
+;; SECTION TREE-SITTER GRAMMAR (Emacs 29+)
+;;
+;; typescript-ts-mode requires the tree-sitter grammars for
+;; Run this once interactively: M-x treesit-install-language-grammar
+;; Or automate it here:
+;; -------------------------------------------------------------
+(use-package treesit
+  :when (>= emacs-major-version 29)
+  :config
+  (setq treesit-language-source-alist
+        '((typescript "https://github.com/tree-sitter/tree-sitter-typescript"
+                      "master" "typescript/src")))
+  )
+
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+(add-hook 'typescript-ts-mode-hook #'satori/enable-line-numbers-mode)
+
+;; -------------------------------------------------------------
+;; SECTION CORFU
+;; -------------------------------------------------------------
+(use-package corfu
+  :ensure t
+  :hook (prog-mode . corfu-mode)
+  :custom
+  (corfu-auto t)          ;; show suggestions automatically
+  (corfu-auto-delay 0.1)  ;; seconds before suggestions appear
+  (corfu-auto-prefix 1)   ;; start suggesting after 1 character
+  (corfu-cycle t))        ;; cycle through candidates with TAB
+
+
+;; -------------------------------------------------------------
+;; SECTION VISUAL FILL LINE MODE
+;; -------------------------------------------------------------
+(use-package visual-fill-column
+  :ensure t
+    :config
+      (setq-default visual-fill-column-width 120)
+      (setq-default visual-fill-column-center-text t  )
+    )
+(add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
+
+;; -------------------------------------------------------------
+;; SECTION IMENU LIST
+;; -------------------------------------------------------------
+(use-package imenu-list
+  :ensure t
+  :bind ("C-c i" . imenu-list-smart-toggle)
+  :custom
+  (imenu-list-focus-after-activation t)
+  (imenu-list-position 'left)
+  (imenu-list-auto-resize t))
+
+;; -------------------------------------------------------------
+;; SECTION TREEMACS
+;; -------------------------------------------------------------
+(use-package treemacs
+  :ensure t
+  :bind
+  ("C-c t" . treemacs)
+  :custom
+  (treemacs-width 35)
+  (treemacs-position 'left)
+  (treemacs-project-follow-mode t)
+  (treemacs-show-hidden-files t))
+
+;; -------------------------------------------------------------
+;; SECTION VTERM
+;; -------------------------------------------------------------
+;; vterm - proper terminal emulator
+(use-package vterm
+  :ensure t)
+
+;; vterm-toggle - VSCode-style bottom panel toggle
+(use-package vterm-toggle
+  :ensure t
+  :bind
+  ("C-c v" . vterm-toggle)
+  :custom
+  (vterm-toggle-fullscreen-p nil)           ; don't take over full frame
+  (vterm-toggle-scope 'project)             ; one terminal per project
+  :config
+  (add-to-list 'display-buffer-alist
+               '((lambda (buf _)
+                   (with-current-buffer buf (equal major-mode 'vterm-mode)))
+                 (display-buffer-reuse-window display-buffer-at-bottom)
+                 (reusable-frames . visible)
+                 (window-height . 0.25))))  ; 25% of frame height
+
+;; -------------------------------------------------------------
+;; SECTION BACKUP — Automatic file backup configuration
+;;
+;; Emacs backs up the original file on the first save of each
+;; session. Numbered backups are kept in a central directory so
+;; project folders stay clean. Old versions are pruned silently.
+;; -------------------------------------------------------------
+
+;; Enable backups (redundant with default, but explicit is good)
+(setq make-backup-files t)
+
+;; Use copying instead of renaming to preserve symlinks/ownership
+(setq backup-by-copying t)
+
+;; Store all backups in one central place instead of next to files
+(setq backup-directory-alist '(("." . "~/.emacs-backups")))
+
+;; Use numbered backup files (file.~1~, file.~2~, ...)
+(setq version-control t)
+
+;; Number of most recent numbered backups to keep
+(setq kept-new-versions 6)
+
+;; Number of oldest numbered backups to keep
+(setq kept-old-versions 2)
+
+;; Delete excess backups silently (no confirmation prompt)
+(setq delete-old-versions t)
+
+;; -------------------------------------------------------------
+;; SECTION ORG AGENDA
+;; -------------------------------------------------------------
+
+(setq satori-agenda-files
+      (directory-files "~/projects/satori-notes/agenda/" t "\\.org$"))
+
+;; Tell org-agenda to use them
+(setq org-agenda-files satori-agenda-files)
+(setq org-agenda-span 14)
+;; (setq org-agenda-files (directory-files-recursively "~/projects/satori-notes" "\\.org$"))
+
+(global-set-key (kbd "C-c a") #'org-agenda)
+
+;; -------------------------------------------------------------
+;; SECTION ORG
+;; -------------------------------------------------------------
+;; -------------------------------------------------------------
+;; SECTION ORG STYLINGS
+;; -------------------------------------------------------------
+
+;; org-bullets: replaces the default asterisk heading markers with
+;; prettier Unicode symbols, cycling through the list per heading level
+(use-package org-bullets
+  :ensure t
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+;; Enable org-indent-mode globally, which visually indents content
+;; under headings to reflect their outline level (no actual spaces added)
+(require 'org-indent)
+(setq org-startup-indented t)
+;; Set the document title face (#+TITLE:) to use Cantarell bold at 1.3x size
+;; Requires the Cantarell font to be installed — see installation notes below
+(set-face-attribute 'org-document-title nil :font "Cantarell" :weight 'bold :height 1.3)
+
+;; Scale each org heading level with a progressively smaller font size
+;; All levels use Cantarell medium; sizes are relative to the base font height
+
+
+(dolist (face '((org-level-1 . 1.2)
+                (org-level-2 . 1.1)
+                (org-level-3 . 1.05)
+                (org-level-4 . 1.0)
+                (org-level-5 . 1.1)
+                (org-level-6 . 1.1)
+                (org-level-7 . 1.1)
+                (org-level-8 . 1.1)))
+  (set-face-attribute (car face) nil :font "Cantarell" :weight 'medium :height (cdr face)))
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+
+;; Ensure org-block (code blocks, example blocks, etc.) inherits fixed-pitch
+;; rather than the variable-pitch font used for prose — keeps code monospaced
+;; :foreground nil means inherit the foreground color from the theme
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+
+;; -------------------------------------------------------------
+;; FONT INSTALLATION: Cantarell
+;; -------------------------------------------------------------
+;;
+;; macOS:
+;;   brew tap homebrew/cask-fonts   # only needed once
+;;   brew install --cask font-cantarell
+;;   Then restart Emacs to pick up the new font.
+;;
+;; Arch Linux:
+;;   sudo pacman -S cantarell-fonts
+;;   (part of the official extra repo, no AUR needed)
+;;   Then restart Emacs.
+;;
+;; Verify the font is visible to Emacs after installing:
+;;   M-: (member "Cantarell" (font-family-list))
+;;   Should return non-nil. If nil, restart Emacs and try again.
+;; -------------------------------------------------------------
+
+;; -------------------------------------------------------------
+;; ORG TODO KEYWORDS
+;; -------------------------------------------------------------
+
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "ON-HOLD(h)" "|" "DONE(d)" "CANCELLED(c)")))
+
+(defun satori/org-clock-todo-change ()
+  (cond
+   ;; If we moved into IN-PROGRESS → clock in
+   ((string= org-state "IN-PROGRESS")
+    (org-clock-in))
+   ;; If we moved out of IN-PROGRESS → clock out
+   ((and org-last-state
+         (string= org-last-state "IN-PROGRESS"))
+    (org-clock-out))))
+
+(add-hook 'org-after-todo-state-change-hook #'satori/org-clock-todo-change)
+;; -------------------------------------------------------------
+;; ORG TODO DONE
+;; This sets current time on Done 
+;; -------------------------------------------------------------
+(setq org-log-done 'time)
+
+
+(defun satori/init()
+  (satori/set-font-size 230)
+  (satori/disable-various-ui-elements)
+  (satori/apply-macos-fix)
+  (satori/set-modeline)
+  (satori/emacs-lisp-mode)
+)
+
+(satori/init)
+
+
+
+;; -------------------------------------------------------------
+;; SECTION PUBLIC
+;; -------------------------------------------------------------
+
+(defun satori/public/set-font-size(fontSize)
+  "Set font size"
+  (interactive "nEnter font size: ")
+  (satori/set-font-size fontSize)
+)
+
+
+;; -------------------------------------------------------------
+;; SECTION END CONFIG
+;; -------------------------------------------------------------
+(add-hook 'org-mode-hook #'visual-line-mode)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(consult corfu ef-themes imenu-list lsp-ui marginalia orderless
+	     treemacs vertico visual-fill-column vterm vterm-toggle)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

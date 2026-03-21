@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: morning checklist
+# key: mcheck
+# --
+
+  - [ ] Check code reviews
+  - [ ] Check email
+  - [ ] Check discord missed messages
+  - [ ] Stand-up summary
+  - [ ] Create a plan for the day
+  - [ ] Check board for priorities

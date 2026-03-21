@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: todayclocktable
+# key: clocktoday
+# --
+#+BEGIN: clocktable :block today :maxlevel 4 :scope file :link t :compact t
+#+END:

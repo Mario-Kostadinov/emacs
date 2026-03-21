@@ -4,6 +4,7 @@
        ("C-s" . consult-line)         ;; Line search, similar to Swiper
        ("C-x b" . consult-buffer)     ;; Enhanced buffer switching
        ;;("C-x b o" . consult-buffer-other-window)
+       ("C-c s" . consult-org-heading)
        ("M-g g" . consult-goto-line)  ;; Go to a specific line
        ;;("C-c p r" . consult-ripgrep)    ;; Search files with ripgrep
        ;;("C-c n" . consult-find)

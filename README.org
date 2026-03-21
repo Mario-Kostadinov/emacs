@@ -9,6 +9,17 @@ What are the goals of this project?
 - task management system
 - to allow me to achieve my life goals
 
+* TODOES [0/1]
+
+** TODO Global Lines Number configuration
+Currently it is disabled in all modes. Config Global Lines to work for:
+- When LSP is active
+- In various file formats
+  - .el
+  - .js
+  - .html
+  - .ts
+  - .java
 
 * Integrated Development Environment
 

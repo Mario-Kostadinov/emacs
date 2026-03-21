@@ -1,4 +1,4 @@
-(setq satori-org-roam-directory "~/projects/satori-notes")    ;; org roam notes directory
+(setq satori-org-roam-directory "~/projects/satori-notes/OrgRoam")    ;; org roam notes directory
 
 (use-package org-roam
   :bind(("C-c n l" . org-roam-buffer-toggle)
@@ -11,3 +11,4 @@
   (setq org-roam-directory satori-org-roam-directory))
 
 
+(setq org-roam-db-autosync-mode 't)

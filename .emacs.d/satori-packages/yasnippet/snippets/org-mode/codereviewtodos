@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: code review checklist
+# key: crcheck
+# --
+
+  - [ ] Read and understand problem
+  - [ ] Reproduce problem on dev
+  - [ ] Verify it works on fixed branch
+  - [ ] *optional* what caused it?
