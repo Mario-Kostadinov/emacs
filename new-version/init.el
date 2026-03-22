@@ -80,9 +80,10 @@
 
 (defun satori/set-modeline()
   (print "Setting modeline settings")
-  (display-time-mode 1)
+
   (setq mode-line-mule-info nil)
   (setq mode-line-percent-position t)
+  (display-time-mode 1)
   (setq display-time-format "%H:%M")
   (setq display-time-24hr-format t)
 )
@@ -427,7 +428,7 @@
   (corfu-auto-prefix 1)   ;; start suggesting after 1 character
   (corfu-cycle t))        ;; cycle through candidates with TAB
 
-
+sator
 ;; -------------------------------------------------------------
 ;; SECTION VISUAL FILL LINE MODE
 ;; -------------------------------------------------------------
